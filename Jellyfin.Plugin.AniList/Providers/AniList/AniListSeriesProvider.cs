@@ -50,6 +50,17 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 string[] filterRemoveList = config.FilterRemoveList.Split(',');
                 foreach(string c in filterRemoveList)
                     searchName = searchName.Replace(c, "");
+                searchName = searchName.Replace(".", " ");
+                searchName = searchName.Replace("-", " ");
+                searchName = searchName.Replace("`", "");
+                searchName = searchName.Replace("'", "");
+                searchName = searchName.Replace("&", "and");
+                searchName = searchName.Replace("(", "");
+                searchName = searchName.Replace(")", "");
+                searchName = searchName.Replace("[", "");
+                searchName = searchName.Replace("]", "");
+                searchName = searchName.Replace("【", "");
+                searchName = searchName.Replace("】", "");
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 if (msr != null)
