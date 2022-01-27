@@ -14,6 +14,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
+using Jellyfin.Plugin.AniList.Configuration;
 
 //API v2
 namespace Jellyfin.Plugin.AniList.Providers.AniList
@@ -45,11 +46,12 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                _log.LogInformation("Start AniList... Searching({Name})", info.Name);                
-                string a = "";
-                a = info.Name.Replace("(18禁アニメ)", "已替换");
-                _log.LogInformation("Start AniList CS... Searching({Name})", a); 
-                MediaSearchResult msr = await _aniListApi.Search_GetSeries(a, cancellationToken);
+                string searchName = info.Name;
+                string[] filterRemoveList = config.FilterRemoveList.Split(',');
+                foreach(string c in filterRemoveList)
+                    searchName = searchName.Replace(c, "");
+                _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
+                MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 if (msr != null)
                 {
                     media = await _aniListApi.GetAnime(msr.id.ToString());
