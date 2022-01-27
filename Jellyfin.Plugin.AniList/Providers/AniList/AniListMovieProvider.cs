@@ -55,14 +55,14 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 string[] quickRemoveEP = {"vol", "下巻", "上巻", "EPISODE","第1話"};
                 // TODO one match
                 foreach(string c in quickRemoveEP)
-                    searchName = new Regex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
+                    searchName = Regex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
 
                 
                 // read filter remove list from config
                 PluginConfiguration config = Plugin.Instance.Configuration;
                 string[] filterRemoveList = config.FilterRemoveList.Split(',');
                 foreach(string c in filterRemoveList)
-                    searchName = new Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
+                    searchName = Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
                 
                 // other replace
                 searchName = searchName.Replace(".", " ");
