@@ -45,8 +45,11 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                _log.LogInformation("Start AniList... Searching({Name})", info.Name);
-                MediaSearchResult msr = await _aniListApi.Search_GetSeries(info.Name, cancellationToken);
+                _log.LogInformation("Start AniList... Searching({Name})", info.Name);                
+                string a = "";
+                a = info.Name.Replace("(18禁アニメ)", "已替换");
+                _log.LogInformation("Start AniList CS... Searching({Name})", a); 
+                MediaSearchResult msr = await _aniListApi.Search_GetSeries(a, cancellationToken);
                 if (msr != null)
                 {
                     media = await _aniListApi.GetAnime(msr.id.ToString());
