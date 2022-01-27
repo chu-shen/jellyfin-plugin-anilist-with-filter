@@ -45,22 +45,62 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
+                string searchName = info.Name;      
+                
+                // quick 
+//                 searchName = searchName.Split(':')[0]
+//                 searchName = searchName.Split('：')[0]
+                foreach(string c in {"vol", "下巻", "上巻", "EPISODE","第1話"})
+                    searchName = Rgex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
+
+                
+                // read filter remove list from config
                 PluginConfiguration config = Plugin.Instance.Configuration;
-                string searchName = info.Name;
                 string[] filterRemoveList = config.FilterRemoveList.Split(',');
                 foreach(string c in filterRemoveList)
-                    searchName = searchName.Replace(c, "");
+                    searchName = Rgex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
+                
+                // other replace
                 searchName = searchName.Replace(".", " ");
                 searchName = searchName.Replace("-", " ");
+                searchName = searchName.Replace("_", " ");
+                searchName = searchName.Replace("+", " ");
                 searchName = searchName.Replace("`", "");
                 searchName = searchName.Replace("'", "");
-                searchName = searchName.Replace("&", "and");
+                searchName = searchName.Replace("&", " ");
+                
+                //
+                string[] removeTime = searchName.Split(new char[2]{'[',']'});
+                Regex onlyNum = new Regex(@"^[0-9]+$");
+                searchName = "";
+                foreach(string c in removeTime)
+                    if (!onlyNum.IsMatch(c))
+                    {
+                        searchName += c
+                    }
+                
+                
+                //
                 searchName = searchName.Replace("(", "");
                 searchName = searchName.Replace(")", "");
                 searchName = searchName.Replace("[", "");
                 searchName = searchName.Replace("]", "");
                 searchName = searchName.Replace("【", "");
                 searchName = searchName.Replace("】", "");
+                
+                //
+                searchName = searchName.Trim();
+                
+                //TODO a better strategy
+                // anime(title)->romaji;R18 anime(title episode)->japanese
+                string numAndLetter = @"^[A-Za-z0-9]+$";
+                Regex numAndLetterRegex = new Regex(numAndLetter);
+                if (!numAndLetterRegex.IsMatch(searchName))
+                {
+                    // return string before first space
+                    searchName = searchName.Split(' ')[0];
+                }
+                
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 if (msr != null)
