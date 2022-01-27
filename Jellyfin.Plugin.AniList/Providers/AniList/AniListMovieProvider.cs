@@ -46,6 +46,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
+                PluginConfiguration config = Plugin.Instance.Configuration;
                 string searchName = info.Name;
                 string[] filterRemoveList = config.FilterRemoveList.Split(',');
                 foreach(string c in filterRemoveList)
