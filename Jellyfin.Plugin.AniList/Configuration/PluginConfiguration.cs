@@ -36,7 +36,7 @@ namespace Jellyfin.Plugin.AniList.Configuration
             AniDbRateLimit = 2000;
             AniDbReplaceGraves = true;
             AniListShowSpoilerTags = true;
-            FilterRemoveList = ""
+            FilterRemoveList = "";
         }
 
         public TitlePreferenceType TitlePreference { get; set; }
