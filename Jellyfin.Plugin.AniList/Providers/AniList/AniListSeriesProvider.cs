@@ -50,7 +50,9 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 // quick 
 //                 searchName = searchName.Split(':')[0]
 //                 searchName = searchName.Split('：')[0]
-                foreach(string c in "vol", "下巻", "上巻", "EPISODE","第1話")
+                string[] quickRemoveEP = {"vol", "下巻", "上巻", "EPISODE","第1話"};
+                // TODO one match
+                foreach(string c in quickRemoveEP)
                     searchName = Rgex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
 
                 
