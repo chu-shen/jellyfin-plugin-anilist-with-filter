@@ -77,7 +77,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 foreach(string c in removeTime)
                     if (!onlyNum.IsMatch(c))
                     {
-                        searchName += c
+                        searchName += c;
                     }
                 
                 
