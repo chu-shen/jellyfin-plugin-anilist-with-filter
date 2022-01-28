@@ -47,12 +47,11 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                string searchName = info.Name;      
+                string searchName = info.Name;     
+                _log.LogInformation("Start AniList ... before Searching ({Name})", searchName);   
                 
                 // quick 
-//                 searchName = searchName.Split(':')[0]
-//                 searchName = searchName.Split('：')[0]
-                string[] quickRemoveEP = {"vol", "下巻", "上巻", "EPISODE","第1話"};
+                string[] quickRemoveEP = {"vol", "下巻", "上巻", "EPISODE", "第1話", "第一話", "#"};
                 // TODO one match
                 foreach(string c in quickRemoveEP)
                     searchName = Regex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
@@ -85,10 +84,10 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 
                 
                 //
+                searchName = searchName.Replace("（", "");
+                searchName = searchName.Replace("）", "");
                 searchName = searchName.Replace("(", "");
                 searchName = searchName.Replace(")", "");
-                searchName = searchName.Replace("[", "");
-                searchName = searchName.Replace("]", "");
                 searchName = searchName.Replace("【", "");
                 searchName = searchName.Replace("】", "");
                 
