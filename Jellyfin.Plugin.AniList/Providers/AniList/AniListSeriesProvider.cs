@@ -46,7 +46,8 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                string searchName = info.Name;      
+                string searchName = info.Name;     
+                _log.LogInformation("Start AniList ... before Searching ({Name})", searchName);   
                 
                 // quick 
                 string[] quickRemoveEP = {"vol", "下巻", "上巻", "EPISODE", "第1話", "第一話", "#"};
