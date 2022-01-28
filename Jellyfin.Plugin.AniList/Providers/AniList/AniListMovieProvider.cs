@@ -97,8 +97,10 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 //TODO a better strategy
                 // anime(title)->romaji;R18 anime(title episode)->japanese
                 string numAndLetter = @"^[A-Za-z0-9]+$";
-                Regex numAndLetterRegex = new Regex(numAndLetter);
-                if (!numAndLetterRegex.IsMatch(searchName))
+                Regex numAndLetterRegex = new Regex(numAndLetter);                
+                string onlyLetter = @"^[a-zA-Z]+$";
+                Regex onlyLetterRegex = new Regex(onlyLetter);
+                if (!numAndLetterRegex.IsMatch(searchName) && !onlyLetterRegex.IsMatch(searchName))
                 {
                     // return string before first space
                     searchName = searchName.Split(' ')[0];
