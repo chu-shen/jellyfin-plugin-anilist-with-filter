@@ -136,9 +136,6 @@ query($id: Int!, $type: MediaType) {
   }
 }&variables={ ""id"":""{0}"",""type"":""ANIME""}";
 
-        // AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
-        // anilist low, Please search by yourself. see your log file and search 'failed in GetImageInfos' . 
-        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(5));
         
         static AniListApi()
         {
@@ -212,10 +209,6 @@ query($id: Int!, $type: MediaType) {
         public async Task<RootObject> WebRequestAPI(string link)
         {
             var httpClient = Plugin.Instance.GetHttpClient();
-            
-            await RequestLimiter.Tick().ConfigureAwait(false);
-            await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
-            
             using (HttpContent content = new FormUrlEncodedContent(Enumerable.Empty<KeyValuePair<string, string>>()))
             using (var response = await httpClient.PostAsync(link, content).ConfigureAwait(false))
             using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
