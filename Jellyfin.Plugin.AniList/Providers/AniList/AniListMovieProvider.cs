@@ -47,12 +47,16 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                _log.LogInformation("Start AniList ... before Searching ({Name})", info.Name);   
+                _log.Debug("Start AniList ... before Searching ({Name})", info.Name);   
                 
                 BasicFilter basicFilter = new BasicFilter();
                 string searchName = basicFilter.GetRealName(info.Name);
                 
-                _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
+                _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);                  
+                
+                _log.LogTrace(System.DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss:fff")+":movie requet time")
+                await AniListSeriesProvider.RequestLimiter.Tick().ConfigureAwait(false);
+                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
