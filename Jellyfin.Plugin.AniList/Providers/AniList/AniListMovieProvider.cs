@@ -54,7 +54,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);                  
                 
-                _log.LogTrace(System.DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss:fff")+":movie requet time")
+                _log.LogTrace(System.DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss:fff")+":movie requet time");
                 await AniListSeriesProvider.RequestLimiter.Tick().ConfigureAwait(false);
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
