@@ -10,8 +10,6 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 
-using System.IO;
-
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
     /// <summary>
@@ -138,13 +136,7 @@ query($id: Int!, $type: MediaType) {
   }
 }&variables={ ""id"":""{0}"",""type"":""ANIME""}";
         
-        
-                
-        // AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
-        // anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
-        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(1));
-
-       
+              
         static AniListApi()
         {
         }
@@ -217,17 +209,6 @@ query($id: Int!, $type: MediaType) {
         public async Task<RootObject> WebRequestAPI(string link)
         {
             var httpClient = Plugin.Instance.GetHttpClient();
-                 
-            
-            string[] line1={System.DateTime.Now.ToString(),"：before wait..........."};
-            File.WriteAllLines(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist","rateLimit.txt"), line1);
-            await RequestLimiter.Tick().ConfigureAwait(false);
-            string[] line2={System.DateTime.Now.ToString(),"：delay wait..........."};
-            File.WriteAllLines(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist","rateLimit.txt"), line2);
-            await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
-
-            string[] line3={System.DateTime.Now.ToString(),"：after wait..........."};
-            File.WriteAllLines(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist","rateLimit.txt"), line3);
             
             using (HttpContent content = new FormUrlEncodedContent(Enumerable.Empty<KeyValuePair<string, string>>()))
             using (var response = await httpClient.PostAsync(link, content).ConfigureAwait(false))
