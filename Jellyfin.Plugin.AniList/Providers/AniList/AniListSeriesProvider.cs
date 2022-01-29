@@ -59,17 +59,16 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
                 
-                 _log.LogDebug("before ({Name})", info.Name);
+                 _log.LogInformation("before ({Name})", info.Name);
             
             
-                string[] line2={System.DateTime.Now.ToString(),"：seriescount..........."};
-                File.WriteAllLines(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist",System.DateTime.Now.ToString(),".txt"), line2);
+                File.WriteAllLines(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist",System.DateTime.Now.ToString("yyyyMMddHHmmssfff"),".txt"), "seriescount");
                 await RequestLimiter.Tick().ConfigureAwait(false);
                 
-                 _log.LogDebug("delay ({Name})", info.Name);
+                 _log.LogInformation("delay ({Name})", info.Name);
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
                 
-                 _log.LogDebug("after ({Name})", info.Name);
+                 _log.LogInformation("after ({Name})", info.Name);
 
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
