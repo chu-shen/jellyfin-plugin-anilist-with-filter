@@ -56,6 +56,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             searchName = searchName.Replace("`", "");
             searchName = searchName.Replace("'", "");
             searchName = searchName.Replace("&", " ");
+            searchName = searchName.Replace("@", " ");
             
             _log.LogDebug("step 3 ({Name})", searchName);   
             
