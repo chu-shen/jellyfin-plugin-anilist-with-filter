@@ -62,7 +62,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                  _log.LogInformation("before ({Name})", info.Name);
             
             
-                File.WriteAllLines(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist",System.DateTime.Now.ToString("yyyyMMddHHmmssfff"),".txt"), "seriescount");
+                File.WriteAllText(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist",System.DateTime.Now.ToString("yyyyMMddHHmmssfff"),".txt"), "seriescount");
                 await RequestLimiter.Tick().ConfigureAwait(false);
                 
                  _log.LogInformation("delay ({Name})", info.Name);
