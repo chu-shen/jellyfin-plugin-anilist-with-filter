@@ -112,12 +112,14 @@ namespace Jellyfin.Plugin.AniList.Filter
             string[] quickRemoveEP = {"vol", "#", "下巻", "上巻","上卷", "下卷", "EPISODE", "第1話", "第2話", "第一話", "第二話", "第一章", "第二章", "第一话", "第二话"};
             
             foreach(string c in quickRemoveEP)
-                Regex r = new Regex(c);
-                if (r.Match(searchName).Success)
+            {
+                Regex epsideRegex = new Regex(c);
+                if (epsideRegex.Match(searchName).Success)
                 {
                     searchName = Regex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
                     return searchName;
                 }
+            }
             
             return searchName;
         }
