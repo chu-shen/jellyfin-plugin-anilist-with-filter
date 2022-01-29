@@ -23,12 +23,13 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         
         // AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
         // anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
-        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1));
+        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(1));
         
         private readonly ILogger<AniListImageProvider> _log;
         
-        public AniListImageProvider()
+        public AniListImageProvider(, ILogger<AniListImageProvider> logger)
         {
+            _log = logger;
             _aniListApi = new AniListApi();
         }
 
@@ -85,6 +86,8 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             var httpClient = Plugin.Instance.GetHttpClient();
             _log.LogInformation("before wait...........");
             await RequestLimiter.Tick().ConfigureAwait(false);
+            
+            _log.LogInformation("delay wait............");
             await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
             
             _log.LogInformation("after wait............");
