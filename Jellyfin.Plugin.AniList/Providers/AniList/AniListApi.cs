@@ -142,9 +142,11 @@ query($id: Int!, $type: MediaType) {
         // anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
         public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(1));
         
+        private readonly ILogger<AniListApi> _log;
         
-        static AniListApi()
+        static AniListApi(ILogger<AniListApi> logger)
         {
+            _log = logger;
         }
 
         /// <summary>
