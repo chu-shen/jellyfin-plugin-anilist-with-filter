@@ -10,7 +10,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 
-using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
