@@ -34,7 +34,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             // 去除集名
             // quick remove info
             searchName = quickRemoveInfo(searchName);
-
+            _log.LogInformation("step 1 ({Name})", searchName);   
             // 读取待过滤文字配置，以 , 分割
             // read words list from config to be filtered, split by ,
             PluginConfiguration config = Plugin.Instance.Configuration;
@@ -42,6 +42,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             foreach(string c in filterRemoveList)
                 searchName = Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
             
+            _log.LogInformation("step 2 ({Name})", searchName);   
             // 替换连接符，如：2010-2022 -> 20102022
             // replace connector, eg:2010-2022 -> 20102022
             searchName = searchName.Replace(".", " ");
@@ -52,6 +53,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             searchName = searchName.Replace("'", "");
             searchName = searchName.Replace("&", " ");
             
+            _log.LogInformation("step 3 ({Name})", searchName);   
             // 以 [ 和 ] 分割字符串，然后去除仅数字字符串，如：年份、编号
             // split the string with [ and ] , then remove only numeric strings, such as year and id
             string[] removeTime = searchName.Split(new char[2]{'[',']'});
@@ -63,6 +65,7 @@ namespace Jellyfin.Plugin.AniList.Filter
                     searchName += c;
                 }
             
+            _log.LogInformation("step 4 ({Name})", searchName);   
             // 替换分隔符
             // replace separator
             searchName = searchName.Replace("（", "");
@@ -72,10 +75,12 @@ namespace Jellyfin.Plugin.AniList.Filter
             searchName = searchName.Replace("【", "");
             searchName = searchName.Replace("】", "");
             
+            _log.LogInformation("step 5 ({Name})", searchName);   
             // 去除空格
             // Remove whitespace
             searchName = searchName.Trim();
 
+            _log.LogDebug("step 6 final ({Name})", searchName);   
             return searchName;
         }
         
@@ -104,6 +109,7 @@ namespace Jellyfin.Plugin.AniList.Filter
                 searchName = searchName.Split(' ')[0];
             }
             
+            _log.LogDebug("step 7 part name ({Name})", searchName);  
             return searchName;
         }
 
