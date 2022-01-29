@@ -10,6 +10,8 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 
+using Microsoft.Extensions.Logging;
+
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
     /// <summary>
@@ -135,7 +137,11 @@ query($id: Int!, $type: MediaType) {
     }
   }
 }&variables={ ""id"":""{0}"",""type"":""ANIME""}";
-
+        
+        // AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
+        // anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
+        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(1));
+        
         
         static AniListApi()
         {
@@ -209,6 +215,16 @@ query($id: Int!, $type: MediaType) {
         public async Task<RootObject> WebRequestAPI(string link)
         {
             var httpClient = Plugin.Instance.GetHttpClient();
+            
+            
+            _log.LogInformation("before wait...........");
+            await RequestLimiter.Tick().ConfigureAwait(false);
+            
+            _log.LogInformation("delay wait............");
+            await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+            
+            _log.LogInformation("after wait............");
+            
             using (HttpContent content = new FormUrlEncodedContent(Enumerable.Empty<KeyValuePair<string, string>>()))
             using (var response = await httpClient.PostAsync(link, content).ConfigureAwait(false))
             using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
