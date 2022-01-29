@@ -151,9 +151,9 @@ query($id: Int!, $type: MediaType) {
             _log = logger;
         }
        
-//         static AniListApi()
-//         {
-//         }
+        static AniListApi()
+        {
+        }
 
         /// <summary>
         /// API call to get the anime with the given id
