@@ -75,7 +75,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             string[] line2={System.DateTime.Now.ToString(),"：imagecount..........."};
-            File.WriteAllText(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist",System.DateTime.Now.ToString(),".txt"), line2);
+            File.WriteAllLines(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist",System.DateTime.Now.ToString(),".txt"), line2);
             await AniListSeriesProvider.RequestLimiter.Tick().ConfigureAwait(false);
             var httpClient = Plugin.Instance.GetHttpClient();
             return await httpClient.GetAsync(url).ConfigureAwait(false);
