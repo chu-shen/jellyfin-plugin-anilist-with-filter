@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+// Note: Not authorized by the original author
+// copy from https://github.com/jellyfin/jellyfin-plugin-anidb/blob/master/Jellyfin.Plugin.AniDB/AsyncLock.cs
 namespace Jellyfin.Plugin.AniList
 {
     public class AsyncSemaphore
