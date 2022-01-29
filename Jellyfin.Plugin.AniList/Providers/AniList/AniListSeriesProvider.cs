@@ -59,14 +59,14 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
                 
-                 _log.LogInformation("before");
+                 _log.LogInformation("before ({Name})", info.Name);
             
                 await RequestLimiter.Tick().ConfigureAwait(false);
                 
-                 _log.LogInformation("delay");
+                 _log.LogInformation("delay ({Name})", info.Name);
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
                 
-                 _log.LogInformation("after");
+                 _log.LogInformation("after ({Name})", info.Name);
 
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
