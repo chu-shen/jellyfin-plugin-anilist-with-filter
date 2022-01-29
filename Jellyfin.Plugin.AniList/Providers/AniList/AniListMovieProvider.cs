@@ -14,7 +14,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
-using Jellyfin.Plugin.AniList.Configuration;
+using Jellyfin.Plugin.AniList.Filter;
 using System.Text.RegularExpressions;
 
 //API v2
@@ -47,68 +47,27 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                string searchName = info.Name;     
-                _log.LogInformation("Start AniList ... before Searching ({Name})", searchName);   
+                _log.LogInformation("Start AniList ... before Searching ({Name})", info.Name);   
                 
-                // quick 
-                string[] quickRemoveEP = {"vol", "下巻", "上巻", "EPISODE", "第1話", "第一話", "#"};
-                // TODO one match
-                foreach(string c in quickRemoveEP)
-                    searchName = Regex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
-
-                
-                // read filter remove list from config
-                PluginConfiguration config = Plugin.Instance.Configuration;
-                string[] filterRemoveList = config.FilterRemoveList.Split(',');
-                foreach(string c in filterRemoveList)
-                    searchName = Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
-                
-                // other replace
-                searchName = searchName.Replace(".", " ");
-                searchName = searchName.Replace("-", " ");
-                searchName = searchName.Replace("_", " ");
-                searchName = searchName.Replace("+", " ");
-                searchName = searchName.Replace("`", "");
-                searchName = searchName.Replace("'", "");
-                searchName = searchName.Replace("&", " ");
-                
-                //
-                string[] removeTime = searchName.Split(new char[2]{'[',']'});
-                Regex onlyNum = new Regex(@"^[0-9]+$");
-                searchName = "";
-                foreach(string c in removeTime)
-                    if (!onlyNum.IsMatch(c))
-                    {
-                        searchName += c;
-                    }
-                
-                
-                //
-                searchName = searchName.Replace("（", "");
-                searchName = searchName.Replace("）", "");
-                searchName = searchName.Replace("(", "");
-                searchName = searchName.Replace(")", "");
-                searchName = searchName.Replace("【", "");
-                searchName = searchName.Replace("】", "");
-                
-                //
-                searchName = searchName.Trim();
-                
-                //TODO a better strategy
-                // TODO how to remove unnecessary info eg:epside title
-                // anime(title)->romaji;R18 anime(title episode)->japanese
-//                 string numAndLetter = @"^[A-Za-z0-9]+$";
-//                 Regex numAndLetterRegex = new Regex(numAndLetter);                
-//                 string onlyLetter = @"^[a-zA-Z]+$";
-//                 Regex onlyLetterRegex = new Regex(onlyLetter);
-//                 if (!numAndLetterRegex.IsMatch(searchName) && !onlyLetterRegex.IsMatch(searchName))
-//                 {
-//                     // return string before first space
-//                     searchName = searchName.Split(' ')[0];
-//                 }
+                BasicFilter basicFilter = new BasicFilter();
+                string searchName = basicFilter.GetRealName(info.Name);
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
+
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+                
+                // 截取部分标题自动重试
+                // get part of title and try again automatically
+                // TODO a better retry
+                byte countRetry = 0;
+                while(msr == null && countRetry<1)
+                {
+                    countRetry++;
+                    string searchPartName = basicFilter.GetPartName(searchName);
+                    _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchPartName);  
+                    msr = await _aniListApi.Search_GetSeries(searchPartName, cancellationToken);
+                }
+                
                 if (msr != null)
                 {
                     media = await _aniListApi.GetAnime(msr.id.ToString());
