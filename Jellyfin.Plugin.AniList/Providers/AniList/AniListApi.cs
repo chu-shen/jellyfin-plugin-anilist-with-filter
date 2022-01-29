@@ -219,13 +219,13 @@ query($id: Int!, $type: MediaType) {
             var httpClient = Plugin.Instance.GetHttpClient();
                  
             
-            File.WriteAllLines("C:\SoftWare\Jellyfin\Data\cache\anilist\rateLimit.txt", System.DateTime.Now+"：before wait...........");
+            File.WriteAllLines("C:/SoftWare/Jellyfin/Data/cache/anilist/rateLimit.txt", System.DateTime.Now+"：before wait...........");
             await RequestLimiter.Tick().ConfigureAwait(false);
 
-            File.WriteAllLines("C:\SoftWare\Jellyfin\Data\cache\anilist\rateLimit.txt", System.DateTime.Now+"：delay wait...........");
+            File.WriteAllLines("C:/SoftWare/Jellyfin/Data/cache/anilist/rateLimit.txt", System.DateTime.Now+"：delay wait...........");
             await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
-            File.WriteAllLines("C:\SoftWare\Jellyfin\Data\cache\anilist\rateLimit.txt", System.DateTime.Now+"：after wait...........");
+            File.WriteAllLines("C:/SoftWare/Jellyfin/Data/cache/anilist/rateLimit.txt", System.DateTime.Now+"：after wait...........");
             
             using (HttpContent content = new FormUrlEncodedContent(Enumerable.Empty<KeyValuePair<string, string>>()))
             using (var response = await httpClient.PostAsync(link, content).ConfigureAwait(false))
