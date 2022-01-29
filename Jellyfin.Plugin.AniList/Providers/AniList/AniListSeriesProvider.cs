@@ -94,16 +94,17 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 searchName = searchName.Trim();
                 
                 //TODO a better strategy
+                // TODO how to remove unnecessary info eg:epside title
                 // anime(title)->romaji;R18 anime(title episode)->japanese
-                string numAndLetter = @"^[A-Za-z0-9]+$";
-                Regex numAndLetterRegex = new Regex(numAndLetter);                
-                string onlyLetter = @"^[a-zA-Z]+$";
-                Regex onlyLetterRegex = new Regex(onlyLetter);
-                if (!numAndLetterRegex.IsMatch(searchName) && !onlyLetterRegex.IsMatch(searchName))
-                {
-                    // return string before first space
-                    searchName = searchName.Split(' ')[0];
-                }
+//                 string numAndLetter = @"^[A-Za-z0-9]+$";
+//                 Regex numAndLetterRegex = new Regex(numAndLetter);                
+//                 string onlyLetter = @"^[a-zA-Z]+$";
+//                 Regex onlyLetterRegex = new Regex(onlyLetter);
+//                 if (!numAndLetterRegex.IsMatch(searchName) && !onlyLetterRegex.IsMatch(searchName))
+//                 {
+//                     // return string before first space
+//                     searchName = searchName.Split(' ')[0];
+//                 }
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
