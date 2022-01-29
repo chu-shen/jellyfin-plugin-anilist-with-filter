@@ -26,6 +26,11 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         private readonly AniListApi _aniListApi;
         public int Order => -2;
         public string Name => "AniList";
+        
+                
+        // AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
+        // anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
+        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(1));
 
         public AniListSeriesProvider(IApplicationPaths appPaths, ILogger<AniListSeriesProvider> logger)
         {
@@ -46,6 +51,16 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
+                 
+            
+                _log.LogInformation("before wait...........");
+                await RequestLimiter.Tick().ConfigureAwait(false);
+
+                _log.LogInformation("delay wait............");
+                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+
+                _log.LogInformation("after wait............");
+
                 _log.LogInformation("Start AniList ... before Searching ({Name})", info.Name);   
                 
                 BasicFilter basicFilter = new BasicFilter();
