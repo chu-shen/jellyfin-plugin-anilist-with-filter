@@ -144,9 +144,13 @@ query($id: Int!, $type: MediaType) {
         
         private readonly ILogger<AniListApi> _log;
         
-        static AniListApi(ILogger<AniListApi> logger)
+        public AniListApi(ILogger<AniListApi> logger)
         {
             _log = logger;
+        }
+        
+        static AniListApi()
+        {
         }
 
         /// <summary>
