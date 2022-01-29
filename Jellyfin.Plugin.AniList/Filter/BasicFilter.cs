@@ -13,9 +13,9 @@ namespace Jellyfin.Plugin.AniList.Filter
 {
     public class BasicFilter
     {
-        private readonly ILogger<AniListSeriesProvider> _log;
+        private readonly ILogger<BasicFilter> _log;
 
-        public BasicFilter(ILogger<AniListSeriesProvider> logger)
+        public BasicFilter(ILogger<BasicFilter> logger)
         {
             _log = logger;
         }
