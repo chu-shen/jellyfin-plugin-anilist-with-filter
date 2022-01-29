@@ -27,7 +27,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         
         private readonly ILogger<AniListImageProvider> _log;
         
-        public AniListImageProvider(, ILogger<AniListImageProvider> logger)
+        public AniListImageProvider(ILogger<AniListImageProvider> logger)
         {
             _log = logger;
             _aniListApi = new AniListApi();
