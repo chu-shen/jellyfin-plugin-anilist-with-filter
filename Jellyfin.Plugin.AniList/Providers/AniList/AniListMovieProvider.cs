@@ -47,7 +47,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                _log.Debug("Start AniList ... before Searching ({Name})", info.Name);   
+                _log.LogDebug("Start AniList ... before Searching ({Name})", info.Name);   
                 
                 BasicFilter basicFilter = new BasicFilter();
                 string searchName = basicFilter.GetRealName(info.Name);
