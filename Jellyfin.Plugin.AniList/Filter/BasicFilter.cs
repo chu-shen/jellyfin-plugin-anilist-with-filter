@@ -13,7 +13,7 @@ namespace Jellyfin.Plugin.AniList.Filter
 {
     public class BasicFilter
     {
-        private readonly ILogger<BasicFilter> _log;
+        private readonly ILogger _log;
 
         public BasicFilter(ILogger<BasicFilter> logger)
         {
