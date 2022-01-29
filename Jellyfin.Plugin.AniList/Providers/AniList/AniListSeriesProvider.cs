@@ -25,7 +25,12 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         private readonly ILogger<AniListSeriesProvider> _log;
         private readonly AniListApi _aniListApi;
         public int Order => -2;
-        public string Name => "AniList";
+        public string Name => "AniList";  
+        
+        // AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
+        // anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
+        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(1));
+
 
         public AniListSeriesProvider(IApplicationPaths appPaths, ILogger<AniListSeriesProvider> logger)
         {
@@ -35,7 +40,8 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         }
 
         public async Task<MetadataResult<Series>> GetMetadata(SeriesInfo info, CancellationToken cancellationToken)
-        {
+        {                 
+            
             var result = new MetadataResult<Series>();
             Media media = null;
 
@@ -52,6 +58,15 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 string searchName = basicFilter.GetRealName(info.Name);
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
+                
+                 _log.LogInformation("before");
+            
+                await RequestLimiter.Tick().ConfigureAwait(false);
+                
+                 _log.LogInformation("delay");
+                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+                
+                 _log.LogInformation("after");
 
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
@@ -122,6 +137,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
+            await RequestLimiter.Tick().ConfigureAwait(false);
             var httpClient = Plugin.Instance.GetHttpClient();
 
             return await httpClient.GetAsync(url).ConfigureAwait(false);
