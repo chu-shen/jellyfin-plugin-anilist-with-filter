@@ -27,9 +27,13 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         public int Order => -2;
         public string Name => "AniList";  
         
-        // AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
-        // anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
-        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(1));
+        // NOTE: AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
+        // NOTE: anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
+        // formula：speed = series Task + movie Task + image Task < 90 Task/per minute  eg: 1min/2sec = 30 < 90
+        // 每分钟的请求总数为30，每个请求间的间隔时间必须在1s以上。具体请求时间自行记录观察当前三种请求的时间点
+        // The total number of requests per minute is 30, and the interval between requests must be more than 1s
+        // 三种请求均使用AniListSeriesProvider中同一个RequestLimiter
+        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(1));
 
 
         public AniListSeriesProvider(IApplicationPaths appPaths, ILogger<AniListSeriesProvider> logger)
@@ -58,18 +62,11 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 string searchName = basicFilter.GetRealName(info.Name);
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
-                
-                 _log.LogInformation("before ({Name})", info.Name);
-            
-            
-                File.WriteAllText(Path.Combine("C:/SoftWare/Jellyfin/Data/cache/anilist",System.DateTime.Now.ToString("yyyyMMddHHmmssfff")+".txt"), "seriescount");
+                            
+                _log.LogTrace(System.DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss:fff")+":series requet time")
                 await RequestLimiter.Tick().ConfigureAwait(false);
-                
-                 _log.LogInformation("delay ({Name})", info.Name);
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
                 
-                 _log.LogInformation("after ({Name})", info.Name);
-
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
                 // 截取部分标题自动重试
