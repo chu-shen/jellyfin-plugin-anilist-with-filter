@@ -14,6 +14,13 @@ namespace Jellyfin.Plugin.AniList.Filter
     public class BasicFilter
     {
         private readonly ILogger<BasicFilter> _log;
+        
+        public BasicFilter(){}
+        
+        public BasicFilter(ILogger<BasicFilter> logger)
+        {
+            _log=logger;
+        }
 
         /// <summary>
         ///获取真实文件名
