@@ -86,7 +86,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             searchName = searchName.Replace("】", " ");
             searchName = searchName.Replace("「", " ");
             searchName = searchName.Replace("」", " ");
-            searchName = Regex.Replace(searchName, @"\s", " ")
+            searchName = Regex.Replace(searchName, @"\s", " ");
             searchName = searchName.Replace("  ", " ");
             
             _log.LogDebug("step 5 ({Name})", searchName);  
