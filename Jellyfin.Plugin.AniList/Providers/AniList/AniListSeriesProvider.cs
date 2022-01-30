@@ -56,6 +56,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
+                //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
                 _log.LogDebug("Start AniList ... before Searching ({Name})", info.Name); 
                 
                 BasicFilter basicFilter = new BasicFilter(_log);
