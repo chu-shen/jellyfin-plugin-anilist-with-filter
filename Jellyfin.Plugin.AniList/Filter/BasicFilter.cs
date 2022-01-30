@@ -130,19 +130,18 @@ namespace Jellyfin.Plugin.AniList.Filter
 
         /// <summary>
         ///根据关键词，去除关键词及之后所有非必要部分，如：集名
-        ///quick remove unnecesary info, eg:epside title
+        ///quick remove unnecesary info, eg:episode title
         ///TODO filter regex
         /// </summary>
         /// <param name="searchName">文件名 searchName</param>
         /// <returns></returns>
         private string quickRemoveInfo(string searchName)
         {
-            string[] quickRemoveEP = {"vol", "#", "下巻", "上巻","上卷", "下卷", "EPISODE", "第1話", "第2話", "第一話", "第二話", "第一章", "第二章", "第一话", "第二话"};
+            string[] quickRemoveEP = {@"vol", @"EPISODE", @"#", @"[上下][巻卷]", @"第[0-9一二三四五六七八九十][話章话]"};
             
             foreach(string c in quickRemoveEP)
             {
-                Regex epsideRegex = new Regex(c);
-                if (epsideRegex.Match(searchName).Success)
+                if (Regex.IsMatch(searchName,c))
                 {
                     searchName = Regex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
                     return searchName;
