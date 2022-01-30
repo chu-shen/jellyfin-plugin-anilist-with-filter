@@ -67,7 +67,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             Regex onlyNum = new Regex(@"^[0-9]+$");
             searchName = "";
             foreach(string c in removeTime)
-                if (!onlyNum.IsMatch(c.Trim()))
+                if (!onlyNum.IsMatch(Regex.Replace(c, @"\s", "")))
                 {
                     searchName += c;
                     _log.LogDebug("step 4-x ({Name})", searchName); 
