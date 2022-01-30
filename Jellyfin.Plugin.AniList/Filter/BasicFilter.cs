@@ -78,12 +78,16 @@ namespace Jellyfin.Plugin.AniList.Filter
             
             // 替换分隔符
             // replace separator
-            searchName = searchName.Replace("（", "");
-            searchName = searchName.Replace("）", "");
-            searchName = searchName.Replace("(", "");
-            searchName = searchName.Replace(")", "");
-            searchName = searchName.Replace("【", "");
-            searchName = searchName.Replace("】", "");
+            searchName = searchName.Replace("（", " ");
+            searchName = searchName.Replace("）", " ");
+            searchName = searchName.Replace("(", " ");
+            searchName = searchName.Replace(")", " ");
+            searchName = searchName.Replace("【", " ");
+            searchName = searchName.Replace("】", " ");
+            searchName = searchName.Replace("「", " ");
+            searchName = searchName.Replace("」", " ");
+            searchName = Regex.Replace(searchName, @"\s", " ")
+            searchName = searchName.Replace("  ", " ");
             
             _log.LogDebug("step 5 ({Name})", searchName);  
             
