@@ -47,11 +47,10 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                // use OriginalTitle not 'new' Name
-                _log.LogDebug("Start AniList ... before Searching ({Name})", info.OriginalTitle);   
+                _log.LogDebug("Start AniList ... before Searching ({Name})", info.Name);   
                 
                 BasicFilter basicFilter = new BasicFilter();
-                string searchName = basicFilter.GetRealName(info.OriginalTitle);
+                string searchName = basicFilter.GetRealName(info.Name);
                 
                 _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);                  
                 
