@@ -137,7 +137,7 @@ namespace Jellyfin.Plugin.AniList.Filter
         /// <returns></returns>
         private string quickRemoveInfo(string searchName)
         {
-            string[] quickRemoveEP = {@"vol", @"EPISODE", @"#", @"[上下][巻卷]", @"第[0-9一二三四五六七八九十][章話话巻卷]?", @"((ACT)|(scene))[ \.\-_][0-9]"};
+            string[] quickRemoveEP = {@"(vol)|(EPISODE)|(#)|(1st)|(2nd)|(3rd)", @"[上中下][巻卷]", @"第[0-9一二三四五六七八九十][章話话巻卷幕]?", @"((ACT)|(scene))[ \.\-_][0-9]", @"[前中後][編编]"};
             
             foreach(string c in quickRemoveEP)
             {
