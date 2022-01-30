@@ -137,11 +137,11 @@ namespace Jellyfin.Plugin.AniList.Filter
         /// <returns></returns>
         private string quickRemoveInfo(string searchName)
         {
-            string[] quickRemoveEP = {@"vol", @"EPISODE", @"#", @"[上下][巻卷]", @"第[0-9一二三四五六七八九十][話章话]?"};
+            string[] quickRemoveEP = {@"vol", @"EPISODE", @"#", @"[上下][巻卷]", @"第[0-9一二三四五六七八九十][話章话]?", @"ACT[ \.\-_][0-9]"};
             
             foreach(string c in quickRemoveEP)
             {
-                if (Regex.IsMatch(searchName,c))
+                if (Regex.IsMatch(searchName,c, RegexOptions.IgnoreCase))
                 {
                     searchName = Regex.Split(searchName, c, RegexOptions.IgnoreCase)[0];
                     return searchName;
