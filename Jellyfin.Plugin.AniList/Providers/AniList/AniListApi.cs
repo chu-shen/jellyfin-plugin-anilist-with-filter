@@ -208,8 +208,8 @@ query($id: Int!, $type: MediaType) {
         /// <returns></returns>
         public async Task<RootObject> WebRequestAPI(string link)
         {
-            var httpClient = Plugin.Instance.GetHttpClient();
-            
+            await AniListSeriesProvider.RequestLimiter.Tick().ConfigureAwait(false);
+            var httpClient = Plugin.Instance.GetHttpClient();            
             using (HttpContent content = new FormUrlEncodedContent(Enumerable.Empty<KeyValuePair<string, string>>()))
             using (var response = await httpClient.PostAsync(link, content).ConfigureAwait(false))
             using (var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
