@@ -50,7 +50,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
                 //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
                 // use true file name ,not info.Name. because it will change to something else 
-                string searchName = Path.GetFileName(info.Path)
+                string searchName = Path.GetFileName(info.Path);
                 _log.LogDebug("Start AniList ... before Searching ({Name})", searchName); 
                 
                 BasicFilter basicFilter = new BasicFilter(_log);
