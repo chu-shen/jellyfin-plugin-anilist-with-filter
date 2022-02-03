@@ -70,9 +70,9 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 //try another filter(Ambiguous words)
                 if(msr == null)
                 {
-                    string searchStrictName = basicFilter.GetStrictName(searchName);
-                    _log.LogInformation("Retry AniList:  ... Searching strict name ({Name})", searchStrictName);  
-                    msr = await _aniListApi.Search_GetSeries(searchStrictName, cancellationToken);
+                    searchName = basicFilter.GetStrictName(searchName);
+                    _log.LogInformation("Retry AniList:  ... Searching strict name ({Name})", searchName);  
+                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 }
 
                 // 截取部分标题自动重试
@@ -84,9 +84,9 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 while(msr == null && countRetry < forceMatchCount)
                 {
                     countRetry++;
-                    string searchPartName = basicFilter.GetPartName(searchName,forceMatchCount-countRetry);
-                    _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchPartName);  
-                    msr = await _aniListApi.Search_GetSeries(searchPartName, cancellationToken);
+                    searchName = basicFilter.GetPartName(searchName,forceMatchCount-countRetry);
+                    _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchName);  
+                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 }                
 
                 if (msr != null)
