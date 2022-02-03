@@ -84,7 +84,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 while(msr == null && countRetry < forceMatchCount)
                 {
                     countRetry++;
-                    searchName = basicFilter.GetPartName(searchName,forceMatchCount-countRetry);
+                    searchName = basicFilter.GetPartName(searchName);
                     _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchName);  
                     msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 }                
