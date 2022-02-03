@@ -19,7 +19,7 @@ using System.Text.RegularExpressions;
 //API v2
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
-    public class AniListResultProvider : IRemoteMetadataProvider<Series, SeriesInfo>, IHasOrder
+    public class AniListResultProvider
     {
         private readonly ILogger _log;
         private readonly AniListApi _aniListApi;
