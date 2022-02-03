@@ -13,8 +13,6 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
-using Jellyfin.Plugin.AniList.Filter;
-using System.Text.RegularExpressions;
 
 //API v2
 namespace Jellyfin.Plugin.AniList.Providers.AniList
@@ -27,15 +25,6 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         public int Order => -2;
         public string Name => "AniList";  
         
-        // NOTE: AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
-        // NOTE: anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
-        // formula：speed = series Task + movie Task + image Task < 90 Task/per minute  eg: 1min/1sec = 60 < 90
-        // 每分钟的请求总数为60，每个请求间的间隔时间必须在500ms以上。具体请求时间自行记录观察当前三种请求的时间点
-        // The total number of requests per minute is 60, and the interval between requests must be more than 500ms
-        // 三种请求均使用AniListSeriesProvider中同一个RequestLimiter
-        public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1));
-
-
         public AniListSeriesProvider(IApplicationPaths appPaths, ILogger<AniListSeriesProvider> logger)
         {
             _log = logger;
@@ -47,49 +36,9 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         {                 
             
             var result = new MetadataResult<Series>();
-            Media media = null;
-
-            var aid = info.ProviderIds.GetOrDefault(ProviderNames.AniList);
-            if (!string.IsNullOrEmpty(aid))
-            {
-                media = await _aniListApi.GetAnime(aid);
-            }
-            else
-            {
-                //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
-                //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
-                // use true file name(without extension) ,not info.Name. because it will change to something else 
-                string searchName = Path.GetFileNameWithoutExtension(info.Path);
-                _log.LogDebug("Start AniList ... before Searching ({Name})", searchName); 
-                
-                BasicFilter basicFilter = new BasicFilter(_log);
-                searchName = basicFilter.GetRealName(searchName);
-                
-                _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
-                            
-                _log.LogTrace(System.DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss:fff")+":series requet time");
-                await RequestLimiter.Tick().ConfigureAwait(false);
-                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
-                
-                MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
-                
-                // 截取部分标题自动重试
-                // get part of title and try again automatically
-                // TODO a better retry
-                byte countRetry = 0;
-                while(msr == null && countRetry<1)
-                {
-                    countRetry++;
-                    string searchPartName = basicFilter.GetPartName(searchName);
-                    _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchPartName);  
-                    msr = await _aniListApi.Search_GetSeries(searchPartName, cancellationToken);
-                }                
-                
-                if (msr != null)
-                {
-                    media = await _aniListApi.GetAnime(msr.id.ToString());
-                }
-            }
+            
+            AniListResultProvider aniListResultProvider = new AniListResultProvider(_log);
+            Media media = aniListResultProvider(info.Path,cancellationToken);
 
             if (media != null)
             {
@@ -140,7 +89,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
-            await RequestLimiter.Tick().ConfigureAwait(false);
+            await AniListResultProvider.RequestLimiter.Tick().ConfigureAwait(false);
             var httpClient = Plugin.Instance.GetHttpClient();
 
             return await httpClient.GetAsync(url).ConfigureAwait(false);
