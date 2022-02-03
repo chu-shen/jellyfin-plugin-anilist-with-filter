@@ -39,7 +39,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             _aniListApi = new AniListApi();
         }
 
-        public Media GetMedia(String infoPath, CancellationToken cancellationToken)
+        public Media GetMedia(ItemLookupInfo info, CancellationToken cancellationToken)
         {
             Media media = null;
 
@@ -53,7 +53,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
                 //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
                 // use true file name(without extension) ,not info.Name. because it will change to something else 
-                string searchName = Path.GetFileNameWithoutExtension(infoPath);
+                string searchName = Path.GetFileNameWithoutExtension(info.Path);
                 _log.LogDebug("Start AniList ... before Searching ({Name})", searchName); 
                 
                 BasicFilter basicFilter = new BasicFilter(_log);
