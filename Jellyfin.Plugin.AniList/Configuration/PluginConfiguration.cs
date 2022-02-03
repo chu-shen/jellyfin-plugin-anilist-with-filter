@@ -36,7 +36,8 @@ namespace Jellyfin.Plugin.AniList.Configuration
             AniDbRateLimit = 2000;
             AniDbReplaceGraves = true;
             AniListShowSpoilerTags = true;
-            FilterRemoveList = "";
+            NormalWords = "";
+            StrictWords = "";
         }
 
         public TitlePreferenceType TitlePreference { get; set; }
@@ -55,6 +56,8 @@ namespace Jellyfin.Plugin.AniList.Configuration
 
         public bool FilterPeopleByTitlePreference { get; set; }
 
-        public string FilterRemoveList { get; set; }
+        public string NormalWords { get; set; }
+        
+        public string StrictWords { get; set; }
     }
 }
