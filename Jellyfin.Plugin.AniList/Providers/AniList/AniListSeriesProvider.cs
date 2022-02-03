@@ -38,7 +38,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             var result = new MetadataResult<Series>();
             
             AniListResultProvider aniListResultProvider = new AniListResultProvider(_log);
-            Media media = aniListResultProvider(info.Path,cancellationToken);
+            Media media = aniListResultProvider.GetMedia(info.Path,cancellationToken);
 
             if (media != null)
             {
