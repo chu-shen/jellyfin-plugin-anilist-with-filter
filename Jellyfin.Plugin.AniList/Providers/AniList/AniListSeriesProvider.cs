@@ -15,6 +15,7 @@ using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 using Jellyfin.Plugin.AniList.Filter;
 using System.Text.RegularExpressions;
+using Jellyfin.Plugin.AniList.Configuration;
 
 //API v2
 namespace Jellyfin.Plugin.AniList.Providers.AniList
