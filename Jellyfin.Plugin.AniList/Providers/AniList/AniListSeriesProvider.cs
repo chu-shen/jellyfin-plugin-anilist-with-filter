@@ -78,10 +78,12 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 // get part of title and try again automatically
                 // TODO a better retry
                 byte countRetry = 0;
-                while(msr == null && countRetry<1)
+                PluginConfiguration AniListConfig = Plugin.Instance.Configuration;
+                int forceMatchCount = AniListConfig.ForceMatchCount;
+                while(msr == null && countRetry < forceMatchCount)
                 {
                     countRetry++;
-                    string searchPartName = basicFilter.GetPartName(searchName);
+                    string searchPartName = basicFilter.GetPartName(searchName,forceMatchCount-countRetry);
                     _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchPartName);  
                     msr = await _aniListApi.Search_GetSeries(searchPartName, cancellationToken);
                 }                
