@@ -46,9 +46,14 @@
                             </select>
                         </div>
                         <div class="inputContainer">
-                            <label class="inputeLabel inputLabelUnfocused" for="chkFilterRemoveList">Filter Remove List</label>
-                            <input id="chkFilterRemoveList" name="chkFilterRemoveList" type="string" is="emby-input" />
+                            <label class="inputeLabel inputLabelUnfocused" for="chkNormalWords">Words To Be Remove</label>
+                            <input id="chkNormalWords" name="chkNormalWords" type="string" is="emby-input" />
                             <div class="fieldDescription">remove string before search anilist, split by ','.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputeLabel inputLabelUnfocused" for="chkStrictWords">Words(Ambiguous) To Be Remove</label>
+                            <input id="chkStrictWords" name="chkStrictWords" type="string" is="emby-input" />
+                            <div class="fieldDescription">remove Ambiguous words if get nothing, split by ','.</div>
                         </div>
                         <div class="checkboxContainer checkboxContainer-withDescription">
                             <label class="emby-checkbox-label">
@@ -92,7 +97,8 @@
                             document.getElementById('chkAniDbRateLimit').value = config.AniDbRateLimit;
                             document.getElementById('chkAniDbReplaceGraves').checked = config.AniDbReplaceGraves;
                             document.getElementById('chkAniListShowSpoilerTags').checked = config.AniListShowSpoilerTags;
-                            document.getElementById('chkFilterRemoveList').value = config.FilterRemoveList;
+                            document.getElementById('chkNormalWords').value = config.NormalWords;
+                            document.getElementById('chkStrictWords').value = config.StrictWords;
 
                             Dashboard.hideLoadingMsg();
                         });
@@ -110,7 +116,8 @@
                             config.AniDbRateLimit = document.getElementById('chkAniDbRateLimit').value;
                             config.AniDbReplaceGraves = document.getElementById('chkAniDbReplaceGraves').checked;
                             config.AniListShowSpoilerTags = document.getElementById('chkAniListShowSpoilerTags').checked;
-                            config.FilterRemoveList = document.getElementById('chkFilterRemoveList').value;
+                            config.NormalWords = document.getElementById('chkNormalWords').value;
+                            config.StrictWords = document.getElementById('chkStrictWords').value;
 
                             ApiClient.updatePluginConfiguration(AniListConfigurationPage.pluginUniqueId, config).then(function (result) {
                                 Dashboard.processPluginConfigurationUpdateResult(result);
