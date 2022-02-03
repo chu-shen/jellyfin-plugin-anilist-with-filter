@@ -64,7 +64,16 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
-
+                
+                //过滤包含歧义的词语
+                //try another filter(Ambiguous words)
+                if(msr == null)
+                {
+                    string searchStrictName = basicFilter.GetStrictName(searchName);
+                    _log.LogInformation("Retry AniList:  ... Searching strict name ({Name})", searchStrictName);  
+                    msr = await _aniListApi.Search_GetSeries(searchStrictName, cancellationToken);
+                }
+                
                 // 截取部分标题自动重试
                 // get part of title and try again automatically
                 // TODO a better retry
