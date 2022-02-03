@@ -122,7 +122,7 @@ namespace Jellyfin.Plugin.AniList.Filter
         /// </summary>
         /// <param name="searchName">文件名 searchName</param>
         /// <returns></returns>
-        public string GetPartName(string searchName,int forceMatchCount)
+        public string GetPartName(string searchName)
         {   
             // 通常，动画是罗马音或原日文标题，比较规范。而里番大概率是罗马音与日文混用或标题名与集名混用，这种情况基本搜索失败
             // 因此判断为非仅字母数字组成的文件名搜索失败时，尝试只使用部分文件名进行搜索，以空格分割
