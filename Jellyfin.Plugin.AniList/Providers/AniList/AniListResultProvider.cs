@@ -39,7 +39,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             _aniListApi = new AniListApi();
         }
 
-        public Media GetMedia(ItemLookupInfo info, CancellationToken cancellationToken)
+        public async Task<Media> GetMedia(ItemLookupInfo info, CancellationToken cancellationToken)
         {
             Media media = null;
 
