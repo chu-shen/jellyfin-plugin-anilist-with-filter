@@ -16,6 +16,7 @@ using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 using Jellyfin.Plugin.AniList.Filter;
 using System.Text.RegularExpressions;
+using Jellyfin.Plugin.AniList.Configuration;
 
 //API v2
 namespace Jellyfin.Plugin.AniList.Providers.AniList
@@ -78,10 +79,12 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 // get part of title and try again automatically
                 // TODO a better retry
                 byte countRetry = 0;
-                while(msr == null && countRetry<1)
+                PluginConfiguration AniListConfig = Plugin.Instance.Configuration;
+                int forceMatchCount = AniListConfig.ForceMatchCount;
+                while(msr == null && countRetry < forceMatchCount)
                 {
                     countRetry++;
-                    string searchPartName = basicFilter.GetPartName(searchName);
+                    string searchPartName = basicFilter.GetPartName(searchName,forceMatchCount-countRetry);
                     _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchPartName);  
                     msr = await _aniListApi.Search_GetSeries(searchPartName, cancellationToken);
                 }
