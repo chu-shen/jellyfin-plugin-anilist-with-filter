@@ -38,6 +38,7 @@ namespace Jellyfin.Plugin.AniList.Configuration
             AniListShowSpoilerTags = true;
             NormalWords = "";
             StrictWords = "";
+            ForceMatchCount = 3;
         }
 
         public TitlePreferenceType TitlePreference { get; set; }
@@ -59,5 +60,7 @@ namespace Jellyfin.Plugin.AniList.Configuration
         public string NormalWords { get; set; }
         
         public string StrictWords { get; set; }
+        
+        public int ForceMatchCount { get; set; }
     }
 }
