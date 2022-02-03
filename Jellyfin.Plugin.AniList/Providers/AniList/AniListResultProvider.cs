@@ -43,55 +43,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         {
             Media media = null;
 
-            var aid = info.ProviderIds.GetOrDefault(ProviderNames.AniList);
-            if (!string.IsNullOrEmpty(aid))
-            {
-                media = await _aniListApi.GetAnime(aid);
-            }
-            else
-            {
-                //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
-                //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
-                // use true file name(without extension) ,not info.Name. because it will change to something else 
-                string searchName = Path.GetFileNameWithoutExtension(info.Path);
-                _log.LogDebug("Start AniList ... before Searching ({Name})", searchName); 
-                
-                BasicFilter basicFilter = new BasicFilter(_log);
-                searchName = basicFilter.GetRealName(searchName);
-                
-                _log.LogInformation("Start AniList ... Searching the correct anime({Name})", searchName);  
-                            
-                _log.LogTrace(System.DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss:fff")+":series requet time");
-                
-                
-                MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
-                
-                //过滤包含歧义的词语
-                //try another filter(Ambiguous words)
-                if(msr == null)
-                {
-                    string searchStrictName = basicFilter.GetStrictName(searchName);
-                    _log.LogInformation("Retry AniList:  ... Searching strict name ({Name})", searchStrictName);  
-                    msr = await _aniListApi.Search_GetSeries(searchStrictName, cancellationToken);
-                }
-                
-                // 截取部分标题自动重试
-                // get part of title and try again automatically
-                // TODO a better retry
-                byte countRetry = 0;
-                while(msr == null && countRetry<1)
-                {
-                    countRetry++;
-                    string searchPartName = basicFilter.GetPartName(searchName);
-                    _log.LogInformation("Retry AniList: ({Count}) ... Searching part name ({Name})", countRetry, searchPartName);  
-                    msr = await _aniListApi.Search_GetSeries(searchPartName, cancellationToken);
-                }                
-                
-                if (msr != null)
-                {
-                    media = await _aniListApi.GetAnime(msr.id.ToString());
-                }
-            }
+            
 
             return media;
         }
