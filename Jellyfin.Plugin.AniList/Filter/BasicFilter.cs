@@ -15,7 +15,7 @@ namespace Jellyfin.Plugin.AniList.Filter
     {
         private readonly ILogger _log;
         
-        public BasicFilter(){}
+        private readonly PluginConfiguration AniListConfig = Plugin.Instance.Configuration;
         
         public BasicFilter(ILogger logger)
         {
@@ -39,8 +39,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             
             // 读取待过滤文字配置，以 , 分割
             // read words list from config to be filtered, split by ,
-            PluginConfiguration config = Plugin.Instance.Configuration;
-            string[] filterRemoveList = config.FilterRemoveList.Split(',');
+            string[] filterRemoveList = AniListConfig.NormalWords.Split(',');
             foreach(string c in filterRemoveList)
                 searchName = Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
             
@@ -98,6 +97,17 @@ namespace Jellyfin.Plugin.AniList.Filter
 
             _log.LogDebug("step 6 final ({Name})", searchName);   
             
+            
+            return searchName;
+        }
+        
+        public string GetStrictName(string searchName)
+        {
+            // 读取待过滤文字配置，以 , 分割
+            // read words list from config to be filtered, split by ,
+            string[] filterRemoveList = AniListConfig.StrictWords.Split(',');
+            foreach(string c in filterRemoveList)
+                searchName; = Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
             
             return searchName;
         }
