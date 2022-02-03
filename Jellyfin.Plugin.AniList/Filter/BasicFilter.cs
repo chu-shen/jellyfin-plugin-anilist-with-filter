@@ -134,11 +134,11 @@ namespace Jellyfin.Plugin.AniList.Filter
             if (!numAndLetterRegex.IsMatch(searchName) && !onlyLetterRegex.IsMatch(searchName))
             {
                 // first index of " "
-                int firstIndex=searchName.indexOf(" ");
+                int firstIndex=searchName.IndexOf(" ");
                 // true index
-                int index=searchName.indexOf(" ", index + forceMatchCount);
+                int index=searchName.IndexOf(" ", index + forceMatchCount);
                 // return string before space
-                searchName = searchName.substring(index);
+                searchName = searchName.Substring(index);
             }
             
             _log.LogDebug("step 7 part name ({Name})", searchName);  
