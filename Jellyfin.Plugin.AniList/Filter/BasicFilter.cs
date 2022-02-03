@@ -107,7 +107,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             // read words list from config to be filtered, split by ,
             string[] filterRemoveList = AniListConfig.StrictWords.Split(',');
             foreach(string c in filterRemoveList)
-                searchName; = Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
+                searchName = Regex.Replace(searchName, c, "", RegexOptions.IgnoreCase);
             
             return searchName;
         }
