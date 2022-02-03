@@ -71,6 +71,8 @@ namespace Jellyfin.Plugin.AniList.Filter
                     searchName += c;
                     _log.LogDebug("step 4-x ({Name})", searchName); 
                 }
+            //example:01-54
+            searchName = Regex.Replace(searchName, @"[0-9]+ [0-9]+","");
             
             _log.LogDebug("step 4 ({Name})", searchName);   
             
@@ -86,13 +88,13 @@ namespace Jellyfin.Plugin.AniList.Filter
             searchName = searchName.Replace("「", " ");
             searchName = searchName.Replace("」", " ");
             searchName = Regex.Replace(searchName, @"\s", " ");
-            searchName = searchName.Replace("  ", " ");
             
             _log.LogDebug("step 5 ({Name})", searchName);  
             
             
             // 去除空格
             // Remove whitespace
+            searchName = searchName.Replace("  ", " ");
             searchName = searchName.Trim();
 
             _log.LogDebug("step 6 final ({Name})", searchName);   
@@ -134,7 +136,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             if (!numAndLetterRegex.IsMatch(searchName) && !onlyLetterRegex.IsMatch(searchName))
             {
                 // return string before last space
-                searchName = searchName.Substring(0,searchName.LastIndexOf(' '));
+                searchName = searchName.Substring(0,searchName.Trim().LastIndexOf(' '));
             }
             
             _log.LogDebug("step 7 part name ({Name})", searchName);  
