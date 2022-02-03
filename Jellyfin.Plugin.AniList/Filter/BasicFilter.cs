@@ -136,7 +136,7 @@ namespace Jellyfin.Plugin.AniList.Filter
                 // first index of " "
                 int firstIndex=searchName.IndexOf(" ");
                 // true index
-                int index=searchName.IndexOf(" ", index + forceMatchCount);
+                int index=searchName.IndexOf(" ", firstIndex + forceMatchCount);
                 // return string before space
                 searchName = searchName.Substring(index);
             }
