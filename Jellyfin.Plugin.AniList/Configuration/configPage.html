@@ -48,12 +48,17 @@
                         <div class="inputContainer">
                             <label class="inputeLabel inputLabelUnfocused" for="chkNormalWords">Words To Be Remove</label>
                             <input id="chkNormalWords" name="chkNormalWords" type="string" is="emby-input" />
-                            <div class="fieldDescription">remove string before search anilist, split by ','.</div>
+                            <div class="fieldDescription">Filter, Step1. remove string before search anilist, split by ','. Set this to empty to disable.</div>
                         </div>
                         <div class="inputContainer">
                             <label class="inputeLabel inputLabelUnfocused" for="chkStrictWords">Words(Ambiguous) To Be Remove</label>
                             <input id="chkStrictWords" name="chkStrictWords" type="string" is="emby-input" />
-                            <div class="fieldDescription">remove Ambiguous words if get nothing, split by ','.</div>
+                            <div class="fieldDescription">Filter, Step2. remove Ambiguous words if get nothing, split by ','. Set this to empty to disable.</div>
+                        </div>
+                        <div class="inputContainer">
+                            <label class="inputeLabel inputLabelUnfocused" for="chkForceMatchCount">Force Match Count</label>
+                            <input id="chkForceMatchCount" name="chkForceMatchCount" type="number" is="emby-input" min="0" />
+                            <div class="fieldDescription">Filter, Step3. Try to search after split the title by spaces. Set this to zero to disable.</div>
                         </div>
                         <div class="checkboxContainer checkboxContainer-withDescription">
                             <label class="emby-checkbox-label">
@@ -99,6 +104,7 @@
                             document.getElementById('chkAniListShowSpoilerTags').checked = config.AniListShowSpoilerTags;
                             document.getElementById('chkNormalWords').value = config.NormalWords;
                             document.getElementById('chkStrictWords').value = config.StrictWords;
+                            document.getElementById('chkForceMatchCount').value = config.ForceMatchCount;
 
                             Dashboard.hideLoadingMsg();
                         });
@@ -118,6 +124,7 @@
                             config.AniListShowSpoilerTags = document.getElementById('chkAniListShowSpoilerTags').checked;
                             config.NormalWords = document.getElementById('chkNormalWords').value;
                             config.StrictWords = document.getElementById('chkStrictWords').value;
+                            config.ForceMatchCount = document.getElementById('chkForceMatchCount').value;
 
                             ApiClient.updatePluginConfiguration(AniListConfigurationPage.pluginUniqueId, config).then(function (result) {
                                 Dashboard.processPluginConfigurationUpdateResult(result);
