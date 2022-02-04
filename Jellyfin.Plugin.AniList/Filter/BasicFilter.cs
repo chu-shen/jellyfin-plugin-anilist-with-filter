@@ -136,6 +136,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             if (!numAndLetterRegex.IsMatch(searchName) && !onlyLetterRegex.IsMatch(searchName))
             {
                 // return string before last space
+                // TODO fix substring(0,-1)
                 searchName = searchName.Substring(0,searchName.Trim().LastIndexOf(' '));
             }
             
