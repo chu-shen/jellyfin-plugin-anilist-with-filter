@@ -137,6 +137,7 @@ namespace Jellyfin.Plugin.AniList.Filter
             {
                 // return string before last space
                 // TODO fix substring(0,-1)
+                // TODO try return after whitespace, First IndexOf
                 searchName = searchName.Substring(0,searchName.Trim().LastIndexOf(' '));
             }
             
