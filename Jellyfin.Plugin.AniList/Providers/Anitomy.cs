@@ -12,22 +12,22 @@ namespace Jellyfin.Plugin.AniList.Anitomy
     {
         public static String ExtractAnimeTitle(string path)
         {
-            var elements = AnitomySharp.AnitomySharp.Parse(path);
+            var elements = Parse(path);
             return elements.FirstOrDefault(p => p.Category == Element.ElementCategory.ElementAnimeTitle).Value;
         }
         public static String ExtractEpisodeTitle(string path)
         {
-            var elements = AnitomySharp.AnitomySharp.Parse(path);
+            var elements = Parse(path);
             return elements.FirstOrDefault(p => p.Category == Element.ElementCategory.ElementEpisodeTitle).Value;
         }
         public static String ExtractEpisodeNumber(string path)
         {
-            var elements = AnitomySharp.AnitomySharp.Parse(path);
+            var elements = Parse(path);
             return elements.FirstOrDefault(p => p.Category == Element.ElementCategory.ElementEpisodeNumber).Value;
         }
         public static String ExtractSeasonNumber(string path)
         {
-            var elements = AnitomySharp.AnitomySharp.Parse(path);
+            var elements = Parse(path);
             return elements.FirstOrDefault(p => p.Category == Element.ElementCategory.ElementAnimeSeason).Value;
         }
     }
