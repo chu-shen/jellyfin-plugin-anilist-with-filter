@@ -12,8 +12,7 @@ namespace Jellyfin.Plugin.AniList.Anitomy
     {
         public static String ExtractAnimeTitle(string path)
         {
-            String input = path;
-            var elements = AnitomySharp.AnitomySharp.Parse(input);
+            var elements = AnitomySharp.AnitomySharp.Parse(path);
             return elements.FirstOrDefault(p => p.Category == Element.ElementCategory.ElementAnimeTitle).Value;
         }
         public static String ExtractEpisodeTitle(string path)
