@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using AnitomySharp;
+using static AnitomySharp.AnitomySharp;
 
 namespace Jellyfin.Plugin.AniList.Anitomy
 {
