@@ -45,9 +45,11 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                var searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(info.Name);
-                _log.LogDebug("Start AniList ... before Searching ({Name})", info.Name); 
+                var searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(info.Path);
+                _log.LogDebug("Start AniList ... before Searching ({Name})", info.Path); 
                 _log.LogInformation("Start AniList... Searching({Name})", searchName);
+                var results = Anitomy.AnitomyHelper.ElementsOutput(info.Path);
+                results.ForEach(x => _log.LogDebug("AnitomySharp Elements:" + x.Category + ": " + x.Value));
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
                 if (msr != null)
