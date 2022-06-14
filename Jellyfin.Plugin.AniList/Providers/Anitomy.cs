@@ -10,6 +10,10 @@ namespace Jellyfin.Plugin.AniList.Anitomy
 {
     public class AnitomyHelper
     {
+        public static String ElementsOutput(string path)
+        {
+            return AnitomySharp.AnitomySharp.Parse(path);
+        }
         public static String ExtractAnimeTitle(string path)
         {
             var elements = AnitomySharp.AnitomySharp.Parse(path);
