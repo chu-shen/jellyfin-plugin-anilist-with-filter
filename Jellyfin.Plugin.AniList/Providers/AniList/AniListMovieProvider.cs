@@ -45,11 +45,15 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                var searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(info.Path);
-                _log.LogDebug("Start AniList ... before Searching ({Name})", info.Path); 
+                //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
+                //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
+                // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
+                string searchName = Path.GetFileNameWithoutExtension(info.Path);
+                _log.LogDebug("Start AniList... before Searching ({Name})", searchName); 
+                searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
                 _log.LogInformation("Start AniList... Searching({Name})", searchName);
-                var results = Anitomy.AnitomyHelper.ElementsOutput(info.Path);
-                results.ForEach(x => _log.LogDebug("AnitomySharp Elements:" + x.Category + ": " + x.Value));
+                var elementsOutput = Anitomy.AnitomyHelper.ElementsOutput(searchName);
+                elementsOutput.ForEach(x => _log.LogDebug("AnitomySharp Elements:" + x.Category + ": " + x.Value));
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
                 if (msr != null)
