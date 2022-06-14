@@ -10,7 +10,7 @@ namespace Jellyfin.Plugin.AniList.Anitomy
 {
     public class AnitomyHelper
     {
-        public static List<Element> ElementsOutput(string path)
+        public static IEnumerable<Element> ElementsOutput(string path)
         {
             return AnitomySharp.AnitomySharp.Parse(path);
         }
