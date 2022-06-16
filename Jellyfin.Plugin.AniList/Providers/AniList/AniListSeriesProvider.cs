@@ -53,7 +53,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
                 _log.LogInformation("Start AniList... Searching({Name})", searchName);
                 var elementsOutput = Anitomy.AnitomyHelper.ElementsOutput(searchName);
-                elementsOutput.ForEach(x => _log.LogInformation("AnitomySharp Elements:" + x.Category + ": " + x.Value));
+                elementsOutput.ForEach(x => _log.LogInformation("AnitomySharp " + Guid.NewGuid().ToString().Split("-")[0] + x.Category + ": " + x.Value));
 
                 await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
