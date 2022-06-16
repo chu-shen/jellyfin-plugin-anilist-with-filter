@@ -49,7 +49,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
                 // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
                 // string searchName = Path.GetFileNameWithoutExtension(info.Path);
-                string searchName = info.Name
+                string searchName = info.Name;
                 _log.LogInformation("Start AniList... before Searching ({Name})", searchName); 
                 searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
                 _log.LogInformation("Start AniList... Searching({Name})", searchName);
