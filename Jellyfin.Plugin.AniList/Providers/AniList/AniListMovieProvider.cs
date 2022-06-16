@@ -48,12 +48,17 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
                 //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
                 // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
-                string searchName = Path.GetFileNameWithoutExtension(info.Path);
+                // string searchName = Path.GetFileNameWithoutExtension(info.Path);
+                string searchName = info.Name
                 _log.LogInformation("Start AniList... before Searching ({Name})", searchName); 
                 searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
                 _log.LogInformation("Start AniList... Searching({Name})", searchName);
                 var elementsOutput = Anitomy.AnitomyHelper.ElementsOutput(searchName);
                 elementsOutput.ForEach(x => _log.LogInformation("AnitomySharp Elements:" + x.Category + ": " + x.Value));
+
+                await AniListResultHelper.RequestLimiter.Tick().ConfigureAwait(false);
+                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 
                 if (msr != null)
@@ -111,6 +116,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
+            await AniListResultHelper.RequestLimiter.Tick().ConfigureAwait(false);
             var httpClient = Plugin.Instance.GetHttpClient();
             return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
