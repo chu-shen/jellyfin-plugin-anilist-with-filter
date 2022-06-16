@@ -56,7 +56,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 var elementsOutput = Anitomy.AnitomyHelper.ElementsOutput(searchName);
                 elementsOutput.ForEach(x => _log.LogInformation("AnitomySharp Elements:" + x.Category + ": " + x.Value));
 
-                await AniListResultHelper.RequestLimiter.Tick().ConfigureAwait(false);
+                await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
@@ -116,7 +116,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
-            await AniListResultHelper.RequestLimiter.Tick().ConfigureAwait(false);
+            await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
             var httpClient = Plugin.Instance.GetHttpClient();
             return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
