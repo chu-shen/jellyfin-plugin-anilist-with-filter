@@ -24,7 +24,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         {
         }
 
-        public String NameHelper(String searchName, ILogger logger){
+        public static String NameHelper(String searchName, ILogger logger){
 
             // https://github.com/jellyfin/jellyfin/blob/master/MediaBrowser.Controller/Providers/ItemLookupInfo.cs
             // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
