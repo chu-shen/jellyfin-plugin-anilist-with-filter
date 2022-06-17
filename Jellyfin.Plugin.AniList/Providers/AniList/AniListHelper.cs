@@ -39,9 +39,6 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             var anitomyID = Guid.NewGuid().ToString().Split("-")[0];
             elementsOutput.ForEach(x => logger.LogInformation("AnitomySharp " + anitomyID + ", " + x.Category + ": " + x.Value));
 
-            await RequestLimiter.Tick().ConfigureAwait(false);
-            await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
-
             return searchName;
         }
 
