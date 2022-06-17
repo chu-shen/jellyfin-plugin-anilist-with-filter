@@ -47,7 +47,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             {
                 MediaSearchResult msr = await _aniListApi.Search_GetSeries(AniListHelper.NameHelper(info.OriginalTitle, _log), cancellationToken);
 
-                if(msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal)
+                if(msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal))
                 {
                     msr = await _aniListApi.Search_GetSeries(AniListHelper.NameHelper(info.Name, _log), cancellationToken);
                 }
