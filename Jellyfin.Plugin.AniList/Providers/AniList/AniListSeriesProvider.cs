@@ -44,22 +44,14 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                //https://github.com/jellyfin/jellyfin/blob/master/Emby.Naming/TV/SeriesInfo.cs
-                //https://github.com/jellyfin/jellyfin/blob/f863ca1f2d00839fd78a7655c759e25e9815483f/Emby.Naming/TV/SeriesResolver.cs#L43
-                // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
-                // string searchName = Path.GetFileNameWithoutExtension(info.Path);
-                string searchName = info.Name;
-                _log.LogInformation("Start AniList... before Searching ({Name})", searchName); 
-                searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
-                _log.LogInformation("Start AniList... Searching({Name})", searchName);
-                var elementsOutput = Anitomy.AnitomyHelper.ElementsOutput(searchName);
-                var anitomyID = Guid.NewGuid().ToString().Split("-")[0];
-                elementsOutput.ForEach(x => _log.LogInformation("AnitomySharp " + anitomyID + ", " + x.Category + ": " + x.Value));
+                
+                MediaSearchResult msr = await _aniListApi.Search_GetSeries(AniListHelper.NameHelper(info.OriginalTitle, _log), cancellationToken);
 
-                await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
-                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+                if(msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal)
+                {
+                    msr = await _aniListApi.Search_GetSeries(AniListHelper.NameHelper(info.Name, _log), cancellationToken);
+                }
 
-                MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 if (msr != null)
                 {
                     media = await _aniListApi.GetAnime(msr.id.ToString());

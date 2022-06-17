@@ -10,8 +10,6 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
     public class AniListHelper
     {
-        private readonly ILogger _log;
-        private readonly AniListApi _aniListApi;
         
         // NOTE: AniDB has very low request rate limits, a minimum of 2 seconds between requests, and an average of 4 seconds between requests
         // NOTE: anilist 90 requests per minute, more info -> https://anilist.gitbook.io/anilist-apiv2-docs/overview/rate-limiting
@@ -22,10 +20,29 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         public static readonly RateLimiter RequestLimiter = new RateLimiter(TimeSpan.FromMilliseconds(500), TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1));
 
 
-        public AniListHelper(ILogger logger)
+        public AniListHelper()
         {
-            _log = logger;
-            _aniListApi = new AniListApi();
+        }
+
+        public String NameHelper(String searchName, ILogger logger){
+
+            // https://github.com/jellyfin/jellyfin/blob/master/MediaBrowser.Controller/Providers/ItemLookupInfo.cs
+            // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
+            // string searchName = Path.GetFileNameWithoutExtension(info.Path);
+
+            logger.LogInformation("Start AniList... before Searching ({Name})", searchName); 
+            searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
+            logger.LogInformation("Start AniList... Searching({Name})", searchName);
+
+            // Anime Name Elements
+            var elementsOutput = Anitomy.AnitomyHelper.ElementsOutput(searchName);
+            var anitomyID = Guid.NewGuid().ToString().Split("-")[0];
+            elementsOutput.ForEach(x => logger.LogInformation("AnitomySharp " + anitomyID + ", " + x.Category + ": " + x.Value));
+
+            await RequestLimiter.Tick().ConfigureAwait(false);
+            await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+
+            return searchName;
         }
 
     }
