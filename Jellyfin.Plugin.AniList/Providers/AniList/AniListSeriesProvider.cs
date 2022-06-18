@@ -45,12 +45,16 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             else
             {
                 
-                string searchName = AniListHelper.NameHelper(info.OriginalTitle, _log);
+                MediaSearchResult msr;
+                if (info.OriginalTitle != null)
+                {
+                    string searchName = AniListHelper.NameHelper(info.OriginalTitle, _log);
 
-                await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
-                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+                    await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
+                    await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
-                MediaSearchResult msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+                }
 
                 if(msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal))
                 {
