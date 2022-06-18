@@ -45,7 +45,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                MediaSearchResult msr = new MediaSearchResult();
+                MediaSearchResult msr = null;
                 string searchName;
                 if (info.OriginalTitle != null)
                 {
