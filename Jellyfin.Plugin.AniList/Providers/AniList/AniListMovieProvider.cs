@@ -46,9 +46,10 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             else
             {
                 MediaSearchResult msr;
+                string searchName;
                 if (info.OriginalTitle != null)
                 {
-                    string searchName = AniListHelper.NameHelper(info.OriginalTitle, _log);
+                    searchName = AniListHelper.NameHelper(info.OriginalTitle, _log);
 
                     await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                     await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
