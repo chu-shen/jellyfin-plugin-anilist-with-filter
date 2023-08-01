@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Jellyfin.Plugin.AniList.Configuration;
-using MediaBrowser.Controller.Entities;
-using MediaBrowser.Model.Entities;
-using MediaBrowser.Model.Providers;
 
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
@@ -160,6 +155,21 @@ query($id: Int!, $type: MediaType) {
         {
             // Reimplemented instead of calling Search_GetSeries_list() for efficiency
             RootObject WebContent = await WebRequestAPI(SearchLink.Replace("{0}", title));
+            foreach (MediaSearchResult media in WebContent.data.Page.media)
+            {
+                return media;
+            }
+            return null;
+        }
+        public async Task<MediaSearchResult> Search_GetSeries(string title, string year, CancellationToken cancellationToken)
+        {
+            // Reimplemented instead of calling Search_GetSeries_list() for efficiency
+            RootObject WebContent = await WebRequestAPI(SearchLink.Replace("{0}", title));
+            foreach (MediaSearchResult media in WebContent.data.Page.media)
+            {
+                if (media.startDate.year == int.Parse(year))
+                    return media;
+            }
             foreach (MediaSearchResult media in WebContent.data.Page.media)
             {
                 return media;

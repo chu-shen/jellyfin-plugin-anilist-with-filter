@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Net;
-using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
-using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 
 //API v2
@@ -44,10 +40,25 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                
+
                 MediaSearchResult msr = null;
                 string searchName;
-                if (info.OriginalTitle != null)
+
+                // get name from path
+                searchName = AniListHelper.NameHelper(Path.GetFileName(info.Path), _log);
+
+                await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
+                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+
+                // get media with correct year
+                var animeYear = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(Path.GetFileName(info.Path)).ExtractAnimeYear();
+                if (animeYear != null)
+                    msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken);
+                else
+                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+
+
+                if (msr == null && info.OriginalTitle != null)
                 {
                     searchName = AniListHelper.NameHelper(info.OriginalTitle, _log);
 
@@ -57,7 +68,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                     msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 }
 
-                if(msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal))
+                if (msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal))
                 {
                     searchName = AniListHelper.NameHelper(info.Name, _log);
 

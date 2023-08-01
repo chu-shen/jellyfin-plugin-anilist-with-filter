@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Entities;
@@ -47,7 +47,21 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             {
                 MediaSearchResult msr = null;
                 string searchName;
-                if (info.OriginalTitle != null)
+                // get name from path
+                searchName = AniListHelper.NameHelper(Path.GetFileName(info.Path), _log);
+
+                await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
+                await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
+
+                // get media with correct year
+                var animeYear = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(Path.GetFileName(info.Path)).ExtractAnimeYear();
+                if (animeYear != null)
+                    msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken);
+                else
+                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+
+
+                if (msr == null && info.OriginalTitle != null)
                 {
                     searchName = AniListHelper.NameHelper(info.OriginalTitle, _log);
 

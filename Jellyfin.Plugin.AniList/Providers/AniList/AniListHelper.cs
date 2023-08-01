@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Net.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.AniList.Providers.AniList
@@ -30,12 +25,13 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
             // string searchName = Path.GetFileNameWithoutExtension(info.Path);
 
-            logger.LogInformation("Start AniList... before Searching ({Name})", searchName); 
-            searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
+            logger.LogInformation("Start AniList... before Searching ({Name})", searchName);
+            var anitomy = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(searchName);
+            searchName = anitomy.ExtractAnimeTitle();
             logger.LogInformation("Start AniList... Searching({Name})", searchName);
 
             // Anime Name Elements
-            var elementsOutput = Anitomy.AnitomyHelper.ElementsOutput(searchName);
+            var elementsOutput = anitomy.GetElements();
             var anitomyID = Guid.NewGuid().ToString().Split("-")[0];
             elementsOutput.ForEach(x => logger.LogInformation("AnitomySharp " + anitomyID + ", " + x.Category + ": " + x.Value));
 
