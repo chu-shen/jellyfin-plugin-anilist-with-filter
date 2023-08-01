@@ -5,14 +5,14 @@
 <img alt="Plugin Banner" src="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/plugins/SVG/jellyfin-plugin-anilist.svg?sanitize=true"/>
 <br/>
 <br/>
-<a href="https://github.com/jellyfin/jellyfin-plugin-anilist/actions?query=workflow%3A%22Test+Build+Plugin%22">
-<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/jellyfin/jellyfin-plugin-anilist/Test%20Build%20Plugin.svg">
+<a href="https://github.com/chu-shen/jellyfin-plugin-anilist/actions?query=workflow%3A%22Build+Plugin%22">
+<img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/chu-shen/jellyfin-plugin-anilist/build.yaml?branch=AnitomySharp">
 </a>
 <a href="https://github.com/jellyfin/jellyfin-plugin-anilist">
 <img alt="GPLv2 License" src="https://img.shields.io/github/license/jellyfin/jellyfin-plugin-anilist.svg"/>
 </a>
-<a href="https://github.com/jellyfin/jellyfin-plugin-anilist/releases">
-<img alt="Current Release" src="https://img.shields.io/github/release/jellyfin/jellyfin-plugin-anilist.svg"/>
+<a href="https://github.com/chu-shen/jellyfin-plugin-anilist/releases">
+<img alt="Current Release" src="https://img.shields.io/github/release/chu-shen/jellyfin-plugin-anilist.svg"/>
 </a>
 </p>
 
