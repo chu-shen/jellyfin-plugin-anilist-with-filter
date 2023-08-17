@@ -47,19 +47,9 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             {
                 MediaSearchResult msr = null;
                 string searchName;
-                // get name from path
-                searchName = AniListHelper.NameHelper(Path.GetFileName(info.Path), _log);
 
                 await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                 await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
-
-                // get media with correct year
-                var animeYear = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(Path.GetFileName(info.Path)).ExtractAnimeYear();
-                if (animeYear != null)
-                    msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken);
-                else
-                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
-
 
                 if (msr == null && info.OriginalTitle != null)
                 {
@@ -80,7 +70,19 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
                     msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
                 }
-                
+
+                if (msr == null)
+                {
+                    // get name from path
+                    searchName = AniListHelper.NameHelper(Path.GetFileName(info.Path), _log);
+                    // get media with correct year
+                    var animeYear = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(Path.GetFileName(info.Path)).ExtractAnimeYear();
+                    if (animeYear != null)
+                        msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken);
+                    else
+                        msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+                }
+
                 if (msr != null)
                 {
                     media = await _aniListApi.GetAnime(msr.id.ToString());
