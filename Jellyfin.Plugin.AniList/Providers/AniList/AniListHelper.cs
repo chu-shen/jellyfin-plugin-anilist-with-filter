@@ -1,3 +1,7 @@
+using System;
+using Microsoft.Extensions.Logging;
+using MediaBrowser.Common.Configuration;
+using Jellyfin.Plugin.AniList.Configuration;
 
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
