@@ -15,7 +15,24 @@ on:
     paths-ignore:
       - '**/*.md'
 
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   call:
     uses: jellyfin/jellyfin-meta-plugins/.github/workflows/build.yaml@master
+
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4  
+        id: release
+        with:  
+          release-type: simple
+      - name: Upload Release Artifact
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: 
+          gh release upload ${{ steps.release.outputs.tag_name }} /home/runner/work/jellyfin-plugin-anilist-with-filter/jellyfin-plugin-anilist-with-filter/Jellyfin.Plugin.AniList/bin/Release/net8.0/Jellyfin.Plugin.AniList.dll
