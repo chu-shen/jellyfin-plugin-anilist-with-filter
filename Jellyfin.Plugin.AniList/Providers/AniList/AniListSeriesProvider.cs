@@ -49,7 +49,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
                 if (msr == null && info.OriginalTitle != null)
                 {
-                    searchName = AniListHelper.NameHelper(info.OriginalTitle, _log);
+                    searchName = AniListHelper.NameHelper(info.OriginalTitle, config, _log);
 
                     await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                     await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
@@ -59,7 +59,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
                 if (msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal))
                 {
-                    searchName = AniListHelper.NameHelper(info.Name, _log);
+                    searchName = AniListHelper.NameHelper(info.Name, config, _log);
 
                     await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                     await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
@@ -69,7 +69,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
                 if(msr==null){
                     // get name from path
-                    searchName = AniListHelper.NameHelper(Path.GetFileName(info.Path), _log);
+                    searchName = AniListHelper.NameHelper(Path.GetFileName(info.Path), config, _log);
                     // get media with correct year
                     var animeYear = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(Path.GetFileName(info.Path)).ExtractAnimeYear();
                     if (animeYear != null)
