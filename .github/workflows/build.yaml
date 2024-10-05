@@ -32,4 +32,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: 
-          gh release upload ${{ steps.release.outputs.tag_name }} build-artifact.zip
+          gh release upload ${{ steps.release.outputs.tag_name }} /home/runner/work/jellyfin-plugin-anilist-with-filter/jellyfin-plugin-anilist-with-filter/build-artifact.zip
