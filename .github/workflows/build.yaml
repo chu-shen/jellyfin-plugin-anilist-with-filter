@@ -4,18 +4,32 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
       - AnitomySharp
-    paths-ignore:
-      - '**/*.md'
   pull_request:
-    branches:
-      - master
-      - AnitomySharp
-    paths-ignore:
-      - '**/*.md'
 
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   call:
     uses: jellyfin/jellyfin-meta-plugins/.github/workflows/build.yaml@master
+
+  release-please:
+    needs: call
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: build-artifact
+      - uses: googleapis/release-please-action@v4  
+        id: release
+        with:  
+          release-type: simple
+      - name: Upload Release Artifact
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: 
+          gh release upload ${{ steps.release.outputs.tag_name }} build-artifact.zip
