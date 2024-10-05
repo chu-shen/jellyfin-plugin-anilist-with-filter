@@ -4,16 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
       - AnitomySharp
-    paths-ignore:
-      - '**/*.md'
   pull_request:
-    branches:
-      - master
-      - AnitomySharp
-    paths-ignore:
-      - '**/*.md'
 
 permissions:
   contents: write
