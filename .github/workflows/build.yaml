@@ -23,6 +23,8 @@ jobs:
         uses: actions/download-artifact@v4.1.8
         with:
           name: build-artifact
+      - name: Display structure of downloaded files
+        run: ls -R
       - uses: googleapis/release-please-action@v4  
         id: release
         with:  
