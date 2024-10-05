@@ -231,29 +231,13 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         public async Task<MediaSearchResult> Search_GetSeries(string title, string year, CancellationToken cancellationToken)
         {
             // Reimplemented instead of calling Search_GetSeries_list() for efficiency
-            RootObject WebContent = await WebRequestAPI(SearchLink.Replace("{0}", title));
-            foreach (MediaSearchResult media in WebContent.data.Page.media)
+            var medias = await Search_GetSeries_list(title, cancellationToken).ConfigureAwait(false);
+            foreach (MediaSearchResult media in medias)
             {
                 if (media.startDate.year == int.Parse(year))
                     return media;
             }
-            foreach (MediaSearchResult media in WebContent.data.Page.media)
-            {
-                return media;
-            }
-            return null;
-        }
-
-        public async Task<MediaSearchResult> Search_GetSeries(string title, string year, CancellationToken cancellationToken)
-        {
-            // Reimplemented instead of calling Search_GetSeries_list() for efficiency
-            RootObject WebContent = await WebRequestAPI(SearchLink.Replace("{0}", title));
-            foreach (MediaSearchResult media in WebContent.data.Page.media)
-            {
-                if (media.startDate.year == int.Parse(year))
-                    return media;
-            }
-            foreach (MediaSearchResult media in WebContent.data.Page.media)
+            foreach (MediaSearchResult media in medias)
             {
                 return media;
             }

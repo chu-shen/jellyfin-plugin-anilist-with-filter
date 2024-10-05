@@ -1,3 +1,6 @@
+- 限制请求速度
+- 改了下匹配策略 
+
 <h1 align="center">Jellyfin AniList Plugin</h1>
 <h3 align="center">Part of the <a href="https://jellyfin.org">Jellyfin Project</a></h3>
 
