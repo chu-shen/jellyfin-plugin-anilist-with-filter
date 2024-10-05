@@ -5,6 +5,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Entities;
@@ -14,34 +17,35 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
+using Jellyfin.Plugin.AniList.Configuration;
+
 
 //API v2
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
     public class AniListMovieProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
-        private readonly IApplicationPaths _paths;
         private readonly ILogger _log;
         private readonly AniListApi _aniListApi;
         public int Order => -2;
         public string Name => "AniList";
 
-        public AniListMovieProvider(IApplicationPaths appPaths, ILogger<AniListMovieProvider> logger)
+        public AniListMovieProvider(ILogger<AniListMovieProvider> logger)
         {
             _log = logger;
             _aniListApi = new AniListApi();
-            _paths = appPaths;
         }
 
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<Movie>();
             Media media = null;
+            PluginConfiguration config = Plugin.Instance.Configuration;
 
             var aid = info.ProviderIds.GetOrDefault(ProviderNames.AniList);
             if (!string.IsNullOrEmpty(aid))
             {
-                media = await _aniListApi.GetAnime(aid);
+                media = await _aniListApi.GetAnime(aid, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -58,7 +62,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                     await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                     await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
-                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
                 }
 
                 if(msr == null && !String.Equals(info.OriginalTitle, info.Name, StringComparison.Ordinal))
@@ -68,7 +72,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                     await AniListHelper.RequestLimiter.Tick().ConfigureAwait(false);
                     await Task.Delay(Plugin.Instance.Configuration.AniDbRateLimit).ConfigureAwait(false);
 
-                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
                 }
 
                 if (msr == null)
@@ -78,14 +82,14 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                     // get media with correct year
                     var animeYear = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(Path.GetFileName(info.Path)).ExtractAnimeYear();
                     if (animeYear != null)
-                        msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken);
+                        msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken).ConfigureAwait(false);
                     else
-                        msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken);
+                        msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
                 }
 
                 if (msr != null)
                 {
-                    media = await _aniListApi.GetAnime(msr.id.ToString());
+                    media = await _aniListApi.GetAnime(msr.id.ToString(), cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -95,7 +99,6 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 result.Item = media.ToMovie();
                 result.People = media.GetPeopleInfo();
                 result.Provider = ProviderNames.AniList;
-                StoreImageUrl(media.id.ToString(), media.GetImageUrl(), "image");
             }
 
             return result;
@@ -108,7 +111,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             var aid = searchInfo.ProviderIds.GetOrDefault(ProviderNames.AniList);
             if (!string.IsNullOrEmpty(aid))
             {
-                Media aid_result = await _aniListApi.GetAnime(aid).ConfigureAwait(false);
+                Media aid_result = await _aniListApi.GetAnime(aid, cancellationToken).ConfigureAwait(false);
                 if (aid_result != null)
                 {
                     results.Add(aid_result.ToSearchResult());
@@ -125,15 +128,6 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
 
             return results;
-        }
-
-        private void StoreImageUrl(string series, string url, string type)
-        {
-            var path = Path.Combine(_paths.CachePath, "anilist", type, series + ".txt");
-            var directory = Path.GetDirectoryName(path);
-            Directory.CreateDirectory(directory);
-
-            File.WriteAllText(path, url);
         }
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)

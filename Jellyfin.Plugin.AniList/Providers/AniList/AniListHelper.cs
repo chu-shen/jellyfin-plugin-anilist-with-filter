@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.Logging;
+using MediaBrowser.Common.Configuration;
 
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
@@ -19,23 +20,26 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         {
         }
 
-        public static String NameHelper(String searchName, ILogger logger){
+        public static String NameHelper(String searchName, PluginConfiguration config, ILogger logger){
 
-            // https://github.com/jellyfin/jellyfin/blob/master/MediaBrowser.Controller/Providers/ItemLookupInfo.cs
-            // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
-            // string searchName = Path.GetFileNameWithoutExtension(info.Path);
+            if (config.UseAnitomyLibrary)
+            {//Use Anitomy to extract the title
+             // https://github.com/jellyfin/jellyfin/blob/master/MediaBrowser.Controller/Providers/ItemLookupInfo.cs
+             // always get true file name(without extension) from path, not info.Name(from ohter metadata plugin).
+             // string searchName = Path.GetFileNameWithoutExtension(info.Path);
 
-            logger.LogInformation("Start AniList... before Searching ({Name})", searchName);
-            var anitomy = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(searchName);
-            searchName = anitomy.ExtractAnimeTitle();
-            logger.LogInformation("Start AniList... Searching({Name})", searchName);
+                logger.LogInformation("Start AniList... before Searching ({Name})", searchName);
+                var anitomy = new Jellyfin.Plugin.AniList.Anitomy.Anitomy(searchName);
+                searchName = anitomy.ExtractAnimeTitle();
+                logger.LogInformation("Start AniList... Searching({Name})", searchName);
 
-            // Anime Name Elements
-            var elementsOutput = anitomy.GetElements();
-            var anitomyID = Guid.NewGuid().ToString().Split("-")[0];
-            elementsOutput.ForEach(x => logger.LogInformation("AnitomySharp " + anitomyID + ", " + x.Category + ": " + x.Value));
+                // Anime Name Elements
+                var elementsOutput = anitomy.GetElements();
+                var anitomyID = Guid.NewGuid().ToString().Split("-")[0];
+                elementsOutput.ForEach(x => logger.LogInformation("AnitomySharp " + anitomyID + ", " + x.Category + ": " + x.Value));
+            }
 
-            return searchName;
+            return searchName = AnilistSearchHelper.PreprocessTitle(searchName); ;
         }
 
     }
