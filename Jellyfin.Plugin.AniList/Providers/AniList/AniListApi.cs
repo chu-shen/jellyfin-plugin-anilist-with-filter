@@ -244,22 +244,6 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             return null;
         }
 
-        public async Task<MediaSearchResult> Search_GetSeries(string title, string year, CancellationToken cancellationToken)
-        {
-            // Reimplemented instead of calling Search_GetSeries_list() for efficiency
-            RootObject WebContent = await WebRequestAPI(SearchLink.Replace("{0}", title));
-            foreach (MediaSearchResult media in WebContent.data.Page.media)
-            {
-                if (media.startDate.year == int.Parse(year))
-                    return media;
-            }
-            foreach (MediaSearchResult media in WebContent.data.Page.media)
-            {
-                return media;
-            }
-            return null;
-        }
-
         /// <summary>
         /// API call to search a title and return a list of results
         /// </summary>

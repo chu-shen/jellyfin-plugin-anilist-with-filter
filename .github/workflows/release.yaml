@@ -13,6 +13,14 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
-        with:
-          release-type: simple
+      - name: Checkout code  
+        uses: actions/checkout@v2  
+
+      - name: Get current date  
+        id: date  
+        run: echo "CURRENT_VERSION=$(date +'%Y.%m.%d')" >> $GITHUB_ENV  
+
+      - uses: googleapis/release-please-action@v4  
+        with:  
+          release-type: simple  
+          release-as: ${{ env.CURRENT_VERSION }}  

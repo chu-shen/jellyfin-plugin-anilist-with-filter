@@ -1,6 +1,3 @@
-using System;
-using Microsoft.Extensions.Logging;
-using MediaBrowser.Common.Configuration;
 
 namespace Jellyfin.Plugin.AniList.Providers.AniList
 {
@@ -20,7 +17,7 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         {
         }
 
-        public static String NameHelper(String searchName, PluginConfiguration config, ILogger logger){
+        public static String NameHelper(String searchName, Plugin.Instance.Configuration config, ILogger logger){
 
             if (config.UseAnitomyLibrary)
             {//Use Anitomy to extract the title
