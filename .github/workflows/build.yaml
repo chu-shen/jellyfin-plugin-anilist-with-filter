@@ -24,6 +24,7 @@ jobs:
     uses: jellyfin/jellyfin-meta-plugins/.github/workflows/build.yaml@master
 
   release-please:
+    needs: call
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4  
