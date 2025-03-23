@@ -8,6 +8,7 @@ using MediaBrowser.Model.Providers;
 using Microsoft.Extensions.Logging;
 using Jellyfin.Plugin.AniList.Configuration;
 using System.Globalization;
+using System.IO;
 
 //API v2
 namespace Jellyfin.Plugin.AniList.Providers.AniList
@@ -43,10 +44,15 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                 if(config.UseAnitomyLibrary)
                 {
                     // Use Anitomy to extract the title
-                    searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
+                    searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(info.OriginalTitle);
                     searchName = AnilistSearchHelper.PreprocessTitle(searchName);
+                    // get media with correct year
+                    var animeYear = Anitomy.AnitomyHelper.ExtractAnimeYear(Path.GetFileName(info.Path));
                     _log.LogInformation("Start AniList... Searching({Name})", searchName);
-                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
+                    if (animeYear != null)
+                        msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken).ConfigureAwait(false);
+                    else
+                        msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
                     if (msr is not null)
                     {
                         media = await _aniListApi.GetAnime(msr.id.ToString(CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);

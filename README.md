@@ -1,3 +1,6 @@
+- 搜索时 Anitomy 解析原始标题
+- Anitomy 解析路径中的年份，准确匹配搜索结果
+
 <h1 align="center">Jellyfin AniList Plugin</h1>
 <h3 align="center">Part of the <a href="https://jellyfin.org">Jellyfin Project</a></h3>
 
