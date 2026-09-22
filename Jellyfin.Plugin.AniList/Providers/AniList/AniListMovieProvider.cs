@@ -39,6 +39,8 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
+                var candidates = new List<(string Title, int? Year)>();
+
                 int? animeYear = null;
                 if (config.UseAnitomyLibrary)
                 {
@@ -49,20 +51,23 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
 
                 if (config.UseOriginalTitle && !string.IsNullOrWhiteSpace(info.OriginalTitle))
                 {
-                    var originalTitle = config.UseAnitomyLibrary
-                        ? Anitomy.AnitomyHelper.ExtractAnimeTitle(info.OriginalTitle)
-                        : info.OriginalTitle;
-
-                    media = await SearchAniListAsync(originalTitle, animeYear, cancellationToken).ConfigureAwait(false);
+                    if (config.UseAnitomyLibrary)
+                    {
+                        candidates.Add((Anitomy.AnitomyHelper.ExtractAnimeTitle(info.OriginalTitle), animeYear));
+                    }
+                    candidates.Add((info.OriginalTitle, null));
                 }
-
-                if (media is null)
+                if (config.UseAnitomyLibrary)
                 {
-                    var name = config.UseAnitomyLibrary
-                        ? Anitomy.AnitomyHelper.ExtractAnimeTitle(info.Name)
-                        : info.Name;
+                    candidates.Add((Anitomy.AnitomyHelper.ExtractAnimeTitle(info.Name), animeYear));
+                }
+                candidates.Add((info.Name, null));
 
-                    media = await SearchAniListAsync(name, animeYear, cancellationToken).ConfigureAwait(false);
+                foreach (var (title, year) in candidates)
+                {
+                    media = await SearchAniListAsync(title, year, cancellationToken).ConfigureAwait(false);
+                    if (media is not null)
+                        break;
                 }
             }
 
