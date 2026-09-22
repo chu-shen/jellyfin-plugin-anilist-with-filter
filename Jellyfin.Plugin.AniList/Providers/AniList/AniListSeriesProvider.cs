@@ -39,40 +39,30 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
             else
             {
-                var searchName = info.Name;
-                MediaSearchResult msr;
+                int? animeYear = null;
                 if (config.UseAnitomyLibrary)
                 {
-                    // Use Anitomy to extract the title
-                    searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
-                    // TODO: Add episode/season?
-                    searchName = AnilistSearchHelper.PreprocessTitle(searchName);
-
-                    var animeYear = Anitomy.AnitomyHelper.ExtractAnimeYear(Path.GetFileName(info.Path));
-
-                    _log.LogInformation("Start AniList... Searching({Name})", searchName);
-                    if (animeYear != null)
-                        msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken).ConfigureAwait(false);
-                    else
-                        msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
-                    if (msr is not null)
-                    {
-                        media = await _aniListApi.GetAnime(msr.id.ToString(CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);
-                    }
+                    var yearStr = Anitomy.AnitomyHelper.ExtractAnimeYear(Path.GetFileName(info.Path));
+                    if (int.TryParse(yearStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var y))
+                        animeYear = y;
                 }
 
-                if (!config.UseAnitomyLibrary || media is null)
+                if (config.UseOriginalTitle && !string.IsNullOrWhiteSpace(info.OriginalTitle))
                 {
-                    searchName = info.Name;
-                    searchName = AnilistSearchHelper.PreprocessTitle(searchName);
+                    var originalTitle = config.UseAnitomyLibrary
+                        ? Anitomy.AnitomyHelper.ExtractAnimeTitle(info.OriginalTitle)
+                        : info.OriginalTitle;
 
-                    _log.LogInformation("Start AniList... Searching({Name})", searchName);
+                    media = await SearchAniListAsync(originalTitle, animeYear, cancellationToken).ConfigureAwait(false);
+                }
 
-                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
-                    if (msr is not null)
-                    {
-                        media = await _aniListApi.GetAnime(msr.id.ToString(CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);
-                    }
+                if (media is null)
+                {
+                    var name = config.UseAnitomyLibrary
+                        ? Anitomy.AnitomyHelper.ExtractAnimeTitle(info.Name)
+                        : info.Name;
+
+                    media = await SearchAniListAsync(name, animeYear, cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -85,6 +75,23 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
             }
 
             return result;
+        }
+        private async Task<Media> SearchAniListAsync(string searchName, int? animeYear, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(searchName))
+                return null;
+
+            searchName = AnilistSearchHelper.PreprocessTitle(searchName);
+            _log.LogInformation("Start AniList... Searching({Name})", searchName);
+
+            var msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken).ConfigureAwait(false);
+
+            if (msr is null)
+                return null;
+
+            return await _aniListApi.GetAnime(
+                msr.id.ToString(CultureInfo.InvariantCulture),
+                cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(SeriesInfo searchInfo, CancellationToken cancellationToken)
