@@ -243,6 +243,23 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
         {
             return (await Search_GetSeries_list(title, cancellationToken).ConfigureAwait(false)).FirstOrDefault();
         }
+        /// <summary>
+        /// API call to search a title and return the first result that matches the given year
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="year"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<MediaSearchResult> Search_GetSeries(string title, string year, CancellationToken cancellationToken)
+        {
+          var medias = await Search_GetSeries_list(title, cancellationToken).ConfigureAwait(false);
+          foreach (MediaSearchResult media in medias)
+          {
+            if (media.startDate.year == int.Parse(year, CultureInfo.InvariantCulture))
+              return media;
+          }
+          return medias.FirstOrDefault();
+        }
 
         /// <summary>
         /// API call to search a title and return a list of results

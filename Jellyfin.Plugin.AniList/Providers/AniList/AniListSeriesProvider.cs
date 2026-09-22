@@ -1,3 +1,4 @@
+using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,9 +48,13 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                     // TODO: Add episode/season?
                     searchName = AnilistSearchHelper.PreprocessTitle(searchName);
 
-                    _log.LogInformation("Start AniList... Searching({Name})", searchName);
+                    var animeYear = Anitomy.AnitomyHelper.ExtractAnimeYear(Path.GetFileName(info.Path));
 
-                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
+                    _log.LogInformation("Start AniList... Searching({Name})", searchName);
+                    if (animeYear != null)
+                        msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken).ConfigureAwait(false);
+                    else
+                        msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
                     if (msr is not null)
                     {
                         media = await _aniListApi.GetAnime(msr.id.ToString(CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);
