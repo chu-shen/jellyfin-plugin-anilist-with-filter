@@ -45,8 +45,14 @@ namespace Jellyfin.Plugin.AniList.Providers.AniList
                     // Use Anitomy to extract the title
                     searchName = Anitomy.AnitomyHelper.ExtractAnimeTitle(searchName);
                     searchName = AnilistSearchHelper.PreprocessTitle(searchName);
+
+                    var animeYear = Anitomy.AnitomyHelper.ExtractAnimeYear(Path.GetFileName(info.Path));
+
                     _log.LogInformation("Start AniList... Searching({Name})", searchName);
-                    msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
+                    if (animeYear != null)
+                        msr = await _aniListApi.Search_GetSeries(searchName, animeYear, cancellationToken).ConfigureAwait(false);
+                    else
+                        msr = await _aniListApi.Search_GetSeries(searchName, cancellationToken).ConfigureAwait(false);
                     if (msr is not null)
                     {
                         media = await _aniListApi.GetAnime(msr.id.ToString(CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);
